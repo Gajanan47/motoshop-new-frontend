@@ -28,7 +28,7 @@ const ReAuth = () => {
             <section className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
                 <div className="text-center mb-8">
                     <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-                        MOTO<span className="text-orange-500">SHOP</span>
+                        MOTO<span className="text-blue-500">SHOP</span>
                     </h1>
                     <p className="mt-2 text-sm text-slate-500">
                         Confirm your password to continue.
@@ -37,7 +37,7 @@ const ReAuth = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <span className="text-xs font-semibold uppercase tracking-wide text-orange-500">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-blue-500">
                             Security check
                         </span>
                         <h2 className="mt-1 text-xl font-bold text-slate-900">
@@ -58,7 +58,7 @@ const ReAuth = () => {
                             onChange={(e) => setPass(e.target.value)}
                             required
                             placeholder="Enter your password"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-400 transition"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition"
                         />
                     </div>
 
@@ -71,7 +71,7 @@ const ReAuth = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition cursor-pointer"
+                        className="w-full py-2.5 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold rounded-xl transition cursor-pointer"
                     >
                         {loading ? "Verifying..." : "Verify"}
                     </button>
@@ -79,7 +79,7 @@ const ReAuth = () => {
                     <button
                         type="button"
                         onClick={() => navigate("/profile")}
-                        className="w-full py-2.5 border border-slate-200 text-slate-500 hover:border-orange-400 hover:text-orange-500 rounded-xl text-sm transition cursor-pointer"
+                        className="w-full py-2.5 border border-slate-200 text-slate-500 hover:border-blue-400 hover:text-blue-500 rounded-xl text-sm transition cursor-pointer"
                     >
                         Back to account
                     </button>

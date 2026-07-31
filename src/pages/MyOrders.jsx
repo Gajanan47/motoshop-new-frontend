@@ -77,8 +77,8 @@ export default function MyOrders() {
                   onClick={() => setStatusFilter(filter.value)}
                   className={`w-full text-left px-3 py-2 rounded-xl text-sm transition ${
                     statusFilter === filter.value
-                      ? "bg-orange-500 text-white"
-                      : "text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+                      ? "bg-blue-500 text-white"
+                      : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
                   }`}
                 >
                   {filter.label}
@@ -98,7 +98,7 @@ export default function MyOrders() {
                 </div>
                 <button
                   onClick={() => navigate("/")}
-                  className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition"
+                  className="px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition"
                 >
                   Continue Shopping
                 </button>
@@ -142,9 +142,9 @@ function OrderCard({ order, onCancel, canceling }) {
   const canCancel = CANCELLABLE_STATUS.includes(order.status)
 
   return (
-    <article className="bg-white border border-slate-200 hover:border-orange-400 rounded-2xl shadow-sm p-4 transition">
+    <article className="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl shadow-sm p-4 transition">
       <div className="grid grid-cols-[64px_1fr] md:grid-cols-[76px_1fr_140px_160px] gap-4 items-center">
-        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center overflow-hidden">
+        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center overflow-hidden">
           {firstItem.image ? (
             <img src={firstItem.image} alt={firstItem.name || "Product"} className="w-full h-full object-contain p-1" />
           ) : (
@@ -162,7 +162,7 @@ function OrderCard({ order, onCancel, canceling }) {
 
         <div>
           <p className="text-xs text-slate-400">Price</p>
-          <p className="font-bold text-orange-500">₹{total.toFixed(2)}L</p>
+          <p className="font-bold text-blue-500">₹{total.toFixed(2)}L</p>
         </div>
 
         <div className="md:text-left">

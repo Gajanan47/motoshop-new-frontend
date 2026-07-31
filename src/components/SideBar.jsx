@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 const vehicleTypeOptions = [
   { value: "all", label: "All Types" },
@@ -45,9 +46,33 @@ function labelFor(key, filters) {
 }
 
 function Dropdown({ id, label, open, onToggle, children }) {
+  const btnRef = useRef(null)
+  const [coords, setCoords] = useState(null)
+
+  // Recalculate the panel's position off the trigger button whenever it
+  // opens, and keep it pinned while the filter bar scrolls horizontally
+  // or the window scrolls/resizes.
+  useLayoutEffect(() => {
+    if (!open) return
+
+    function updateCoords() {
+      const rect = btnRef.current?.getBoundingClientRect()
+      if (rect) setCoords({ top: rect.bottom + 8, left: rect.left })
+    }
+
+    updateCoords()
+    window.addEventListener("scroll", updateCoords, true)
+    window.addEventListener("resize", updateCoords)
+    return () => {
+      window.removeEventListener("scroll", updateCoords, true)
+      window.removeEventListener("resize", updateCoords)
+    }
+  }, [open])
+
   return (
     <div className="relative">
       <button
+        ref={btnRef}
         onClick={() => onToggle(id)}
         className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg border text-sm font-medium transition cursor-pointer whitespace-nowrap
           ${open ? "border-blue-500 text-blue-600 bg-blue-50" : "border-slate-200 text-slate-700 hover:border-blue-300"}`}
@@ -55,10 +80,14 @@ function Dropdown({ id, label, open, onToggle, children }) {
         {label}
         <span className={`text-[10px] transition-transform ${open ? "rotate-180" : ""}`}>▾</span>
       </button>
-      {open && (
-        <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg z-50 p-2 max-h-72 ">
+      {open && coords && createPortal(
+        <div
+          style={{ position: "fixed", top: coords.top, left: coords.left }}
+          className="w-56 bg-white border border-slate-200 rounded-lg shadow-lg z-50 p-2 max-h-72 overflow-y-auto"
+        >
           {children}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
@@ -102,7 +131,7 @@ export default function Sidebar({ filters, setFilters, resultCount }) {
   return (
     <div
       ref={containerRef}
-      className="sticky top-20 z-40 flex flex-nowrap items-center gap-3  overflow-visible border-b border-slate-200/70 bg-[#f2f4f6]/85 px-5 py-4 backdrop-blur-md sm:px-8 lg:px-16"
+      className="sticky top-20 z-40 flex flex-nowrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none border-b border-slate-200/70 bg-[#f2f4f6]/85 px-4 py-3 sm:px-8 sm:py-4 lg:px-16 backdrop-blur-md"
     >
       <span className="flex items-center gap-1.5 text-blue-600 font-semibold uppercase text-xs tracking-widest shrink-0">
         ⚙ Filter System

@@ -57,6 +57,7 @@ function AppContent() {
 
       {/* {showChatBot && <ChatBot />} */}
       <CompareTray/>
+      <CartModal/>
       
      
     </>

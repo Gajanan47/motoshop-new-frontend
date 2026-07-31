@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import img1 from "../assets/img1.png"
 import img2 from "../assets/img2.png"
@@ -31,12 +32,18 @@ export default function Hero({ featured = [] }) {
   useEffect(() => {
     const interval = setInterval(()=>{
       setCurrentImage((prev)=>(prev+1) % heroBg.length)
-    }, 4000);
+    }, 80000);
   
     return () => {
       clearInterval(interval)
     }
   }, [])
+  function goToNext(){
+    setCurrentImage((prev)=>(prev + 1) % heroBg.length)
+  }
+  function goToPrev(){
+    setCurrentImage((prev)=> (prev-1 + heroBg.length) % heroBg.length)
+  }
   
 
   return (
@@ -50,6 +57,7 @@ export default function Hero({ featured = [] }) {
         }}
       />
       <div className="absolute inset-0 bg-linear-to-r from-slate-950 via-slate-950/80 to-transparent" />
+      
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 lg:items-end">
@@ -124,6 +132,25 @@ export default function Hero({ featured = [] }) {
           )}
         </div>
       </div>
-    </div>
+      <div className="items-center justify-center  mb-4 flex gap-4 ">
+       
+          <button
+        onClick={goToPrev}
+        aria-label="Previous background image"
+        className=" z-10 -translate-y-1/2 px-2  h-9 w-9 sm:h-11 sm:w-11  rounded-full  text-white bg-transparent border border-white/20 transition hover:bg-white/20 cursor-pointer"
+      >
+        <MdChevronLeft className="text-2xl " />
+      </button>
+      <button
+        onClick={goToNext}
+        aria-label="Next background image"
+        className=" bg-transparent  z-10 -translate-y-1/2 px-2  h-9 w-9 sm:h-11 sm:w-11  rounded-full  text-white  border border-white/20 transition hover:bg-white/20 cursor-pointer"
+      >
+        <MdChevronRight className="text-2xl" />
+      </button>
+        </div>
+        
+      </div>
+    
   )
 }

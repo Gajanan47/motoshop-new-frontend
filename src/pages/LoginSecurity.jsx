@@ -148,7 +148,7 @@ const LoginSecurity = () => {
             Your Account
           </span>
           <span className="text-slate-400 mx-2">›</span>
-          <span className="text-orange-600">Login & Security</span>
+          <span className="text-blue-600">Login & Security</span>
         </div>
 
         <h1 className="text-3xl font-medium text-slate-900 mb-6">Login & Security</h1>
@@ -181,14 +181,14 @@ const LoginSecurity = () => {
                     value={nameInput}
                     onChange={(e) => setNameInput(e.target.value)}
                     required
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
                   />
                   {formError && <p className="text-sm text-red-500">{formError}</p>}
                   <div className="flex flex-col-reverse sm:flex-row gap-2">
                     <button type="button" onClick={closeEdit} className="w-full sm:w-auto px-4 py-1.5 text-sm border border-slate-300 rounded-md hover:bg-slate-50 cursor-pointer">
                       Cancel
                     </button>
-                    <button type="submit" disabled={saving} className="w-full sm:w-auto px-4 py-1.5 text-sm bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 text-white rounded-md cursor-pointer">
+                    <button type="submit" disabled={saving} className="w-full sm:w-auto px-4 py-1.5 text-sm bg-blue-500 hover:bg-blue-600 disabled:bg-slate-200 text-white rounded-md cursor-pointer">
                       {saving ? "Saving..." : "Save"}
                     </button>
                   </div>
@@ -204,14 +204,14 @@ const LoginSecurity = () => {
                     value={phoneInput}
                     onChange={(e) => setPhoneInput(e.target.value)}
                     placeholder="Mobile number"
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
                   />
                   {formError && <p className="text-sm text-red-500">{formError}</p>}
                   <div className="flex gap-2">
                     <button type="button" onClick={closeEdit} className="px-4 py-1.5 text-sm border border-slate-300 rounded-md hover:bg-slate-50 cursor-pointer">
                       Cancel
                     </button>
-                    <button type="submit" disabled={saving} className="px-4 py-1.5 text-sm bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 text-white rounded-md cursor-pointer">
+                    <button type="submit" disabled={saving} className="px-4 py-1.5 text-sm bg-blue-500 hover:bg-blue-600 disabled:bg-slate-200 text-white rounded-md cursor-pointer">
                       {saving ? "Saving..." : "Save"}
                     </button>
                   </div>
@@ -227,7 +227,7 @@ const LoginSecurity = () => {
                     onChange={(e) => setNewPasswordInput(e.target.value)}
                     placeholder="New password"
                     required
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
                   />
                   <input
                     type="password"
@@ -235,14 +235,14 @@ const LoginSecurity = () => {
                     onChange={(e) => setConfirmPasswordInput(e.target.value)}
                     placeholder="Confirm new password"
                     required
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
                   />
                   {formError && <p className="text-sm text-red-500">{formError}</p>}
                   <div className="flex gap-2">
                     <button type="button" onClick={closeEdit} className="px-4 py-1.5 text-sm border border-slate-300 rounded-md hover:bg-slate-50 cursor-pointer">
                       Cancel
                     </button>
-                    <button type="submit" disabled={saving} className="px-4 py-1.5 text-sm bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 text-white rounded-md cursor-pointer">
+                    <button type="submit" disabled={saving} className="px-4 py-1.5 text-sm bg-blue-500 hover:bg-blue-600 disabled:bg-slate-200 text-white rounded-md cursor-pointer">
                       {saving ? "Saving..." : "Change password"}
                     </button>
                   </div>

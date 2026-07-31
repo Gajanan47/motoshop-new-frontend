@@ -11,6 +11,7 @@ export default function Navbar() {
   const [searchInput, setSearchInput] = useState("")
   const [suggestions, setsuggestions] = useState([])
   const [products, setproducts] = useState([])
+  const [logoDriving, setLogoDriving] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -92,16 +93,50 @@ export default function Navbar() {
       setsuggestions([])
   }
 
+  function handleLogoClick() {
+    if (logoDriving) return // ignore repeat clicks mid-animation
+    setLogoDriving(true)
+    setTimeout(() => {
+      navigate('/')
+      setSearchInput("")
+      setLogoDriving(false) // reset the bike back to its resting position
+    }, 550)
+  }
+
   return (
     <nav className="sticky top-0 z-50 h-20 border-b border-slate-200/70 bg-[#f7f9fb]/80 px-5 shadow-sm backdrop-blur-xl sm:px-8 lg:px-16">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-3">
 
       {/* Logo */}
       <span
-        onClick={() => { navigate('/'); setSearchInput("") }}
-        className="cursor-pointer shrink-0 font-display text-2xl font-bold tracking-tight text-[#005ab4]"
+        onClick={handleLogoClick}
+        className="group flex cursor-pointer shrink-0 flex-col items-center leading-none"
       >
-        MotoShop
+        <svg
+          viewBox="0 0 64 34"
+          className={`logo-bike h-5 w-10 text-[#005ab4] transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:h-6 sm:w-12 ${logoDriving ? 'driving' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* frame */}
+          <path d="M18 24 L28 12 L40 12 L34 24 M28 12 L24 6 L30 6 M40 12 L46 18 L52 18" />
+          {/* rear wheel */}
+          <g className="wheel">
+            <circle cx="12" cy="24" r="8" />
+            <path d="M12 16v16M4 24h16M6.3 18.3l11.4 11.4M6.3 29.7l11.4-11.4" strokeWidth="1.2" />
+          </g>
+          {/* front wheel */}
+          <g className="wheel">
+            <circle cx="48" cy="24" r="8" />
+            <path d="M48 16v16M40 24h16M42.3 18.3l11.4 11.4M42.3 29.7l11.4-11.4" strokeWidth="1.2" />
+          </g>
+        </svg>
+        <span className="font-display text-2xl font-bold tracking-tight text-[#005ab4]">
+          MotoShop
+        </span>
       </span>
 
       <div className="hidden items-center gap-7 text-sm md:flex">
