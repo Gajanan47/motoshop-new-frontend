@@ -9,7 +9,7 @@ import Hero from "../components/Hero"
 import SideBar from "../components/SideBar"
 import { MdCompareArrows } from "react-icons/md"
 
-const defaultFilters = { type: "all", cc: "all", brand: "all", price: 30, fuel: "all", use: "all" }
+const defaultFilters = { type: "all", cc: "all", brand: "all", price: 100, fuel: "all", use: "all" }
 
 function money(price) {
   return `₹${Number(price || 0).toLocaleString()}L`
@@ -83,14 +83,15 @@ function BikeCard({ product, compact = false }) {
   )
 }
 
-function Row({ eyebrow, title, products, compact }) {
+function Row({ eyebrow, title, products, compact, viewAllTo }) {
+  const navigate = useNavigate()
   return (
     <section className="py-12">
       <div className="mb-6 flex items-end justify-between">
         <div><p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-orange-600">{eyebrow}</p>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">{title}</h2>
         </div>
-        <button onClick={() => alert('coming soon...')} className="hidden items-center gap-2 font-semibold cursor-pointer text-[#005ab4] sm:flex">
+        <button onClick={() => navigate(viewAllTo)} className="hidden items-center gap-2 font-semibold cursor-pointer text-[#005ab4] sm:flex">
           View all <FaArrowRight className="text-xs" />
         </button>
       </div>
@@ -122,7 +123,7 @@ export default function Home() {
     if (query && !`${p.name} ${p.company}`.toLowerCase().includes(query)) return false
     if (filters.type !== "all" && String(p.type) !== filters.type) return false
     if (filters.brand !== "all" && p.company !== filters.brand) return false
-    if (p.price > filters.price || (filters.fuel !== "all" && p.fuel !== filters.fuel) || (filters.use !== "all" && p.use_case !== filters.use)) return false
+    if ((filters.price < 100 && p.price > filters.price) || (filters.fuel !== "all" && p.fuel !== filters.fuel) || (filters.use !== "all" && p.use_case !== filters.use)) return false
     if (filters.cc === "150" && p.cc > 150) return false
     if (filters.cc === "250" && (p.cc < 151 || p.cc > 250)) return false
     if (filters.cc === "500" && (p.cc < 251 || p.cc > 500)) return false
@@ -168,7 +169,7 @@ export default function Home() {
                 Trending Now
               </h1>
             </div>
-            <button onClick={() => alert('Comin soon...')} className="hidden items-center gap-2 
+            <button onClick={() => navigate('/showroom?sort=trending')} className="hidden items-center gap-2 
                 font-semibold text-[#005ab4] sm:flex">
               View all <FaArrowRight className="text-xs" />
             </button>
@@ -289,8 +290,8 @@ export default function Home() {
             </div>
           </div>
         </section>}
-        <Row eyebrow="New arrivals" title="Latest Launches" products={catalogue.slice(0, 6)} />
-        <Row eyebrow="Pure power" title="Top CC Motorcycles" products={[...catalogue].sort((a, b) => (b.cc || 0) - (a.cc || 0)).slice(0, 6)} />
+        <Row eyebrow="New arrivals" title="Latest Launches" products={catalogue.slice(0, 6)} viewAllTo="/showroom?sort=latest" />
+        <Row eyebrow="Pure power" title="Top CC Motorcycles" products={[...catalogue].sort((a, b) => (b.cc || 0) - (a.cc || 0)).slice(0, 6)} viewAllTo="/showroom?sort=topcc" />
         <section className="mt-10 rounded-3xl bg-[#2d3133] px-6 py-12 text-white sm:px-10"><div className="grid gap-8 lg:grid-cols-2"><div>
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-300">
             Exclusivity

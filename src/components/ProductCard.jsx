@@ -35,25 +35,25 @@ export default function ProductCard({ product }) {
   return (
     <div
       onClick={() => navigate(`/products/${product.id}`)}
-      className="flex bg-white border border-slate-200 rounded-2xl  hover:shadow-2xl overflow-hidden hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+      className="group flex bg-white border border-slate-200 rounded-2xl hover:shadow-2xl hover:border-blue-200 overflow-hidden hover:-translate-y-1  transition-all duration-200 cursor-pointer"
     >
       {/* Image — left */}
-      <div className="relative w-48 sm:w-64 lg:w-72 shrink-0 bg-linear-to-br from-slate-50 to-white ">
+      <div className="relative w-56 sm:w-72 lg:w-96 min-h-56 sm:min-h-72 lg:min-h-80 shrink-0 self-stretch overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover p-5 group-hover:scale-105 transition-all duration-500"
+          className="w-full p-3 h-full object-contain group-hover:scale-105 transition-all duration-500"
         />
         {product.badge && (
-          <span className={`absolute top-2.5 left-2.5 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md ${badgeStyle[product.badge]}`}>
+          <span className={`absolute top-2.5 left-2.5 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md shadow-sm ${badgeStyle[product.badge]}`}>
             {product.badge}
           </span>
         )}
       </div>
 
       {/* Content — right */}
-      <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
-        <div>
+      <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between min-w-[260px]">
+        <div className="min-w-0">
           <div className="flex items-start justify-between gap-2">
             <p className="text-[10px] text-blue-600 uppercase tracking-widest font-semibold">
               {product.use_case || product.company}
@@ -62,15 +62,17 @@ export default function ProductCard({ product }) {
               <button
                 onClick={handleCompare}
                 title={isComparing ? "Remove from compare" : "Add to compare"}
-                className={`w-8 h-8 rounded-full border flex items-center justify-center hover:scale-110 transition cursor-pointer ${
-                  isComparing ? "bg-blue-600 border-blue-600 text-white" : "border-slate-200 text-slate-400"
+                aria-label={isComparing ? "Remove from compare" : "Add to compare"}
+                className={`w-8 h-8 rounded-full border shadow-sm flex items-center justify-center hover:scale-110 transition cursor-pointer ${
+                  isComparing ? "bg-blue-600 border-blue-600 text-white" : "bg-white border-slate-200 text-slate-400"
                 }`}
               >
                 <MdCompareArrows className="text-sm" />
               </button>
               <button
                 onClick={handleWishlist}
-                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center hover:scale-110 transition cursor-pointer"
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                className="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:scale-110 transition cursor-pointer"
               >
                 {isWishlisted ? (
                   <FaHeart className="text-red-500 text-sm" />
@@ -81,18 +83,17 @@ export default function ProductCard({ product }) {
             </div>
           </div>
 
-          <h3 className="text-lg font-bold text-slate-900 mt-1 mb-1.5 leading-snug">
+          <h3 className="text-lg font-bold text-slate-900 mt-1 mb-1.5 leading-snug line-clamp-1">
             {product.name}
           </h3>
 
-          {product.description && (
-            <p className="text-sm text-slate-500 line-clamp-2 mb-3">
-              {product.description}
-            </p>
-          )}
+          {/* Reserved so cards without a description still align with ones that have it */}
+          <p className="text-sm text-slate-500 line-clamp-2 mb-3 min-h-[2.5rem]">
+            {product.description || ""}
+          </p>
 
           <div className="flex items-center gap-1.5 mb-3">
-            <span className="text-blue-500 text-xs">{stars}</span>
+            <span className="text-blue-500 text-xs tracking-tight">{stars}</span>
             <span className="text-[11px] text-slate-400">
               ({product.reviews.toLocaleString()})
             </span>
@@ -114,12 +115,12 @@ export default function ProductCard({ product }) {
         <div className="flex items-center justify-between pt-3 border-t border-slate-100">
           <div>
             <p className="text-[10px] text-slate-400 uppercase tracking-wide">Price</p>
-            <span className="text-blue-600 font-bold text-base">₹{product.price}L</span>
+            <span className="text-blue-600 font-bold text-lg">₹{product.price}L</span>
           </div>
           {qty === 0 ? (
             <button
               onClick={(e) => { e.stopPropagation(); addToCart(product) }}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
             >
               + Add to Cart
             </button>
@@ -127,7 +128,7 @@ export default function ProductCard({ product }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={(e) => { e.stopPropagation(); removeFromCart(product.id) }}
-                className="w-7 h-7 rounded-md bg-slate-100 hover:bg-red-100 hover:text-red-500 text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer"
+                className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-red-100 hover:text-red-500 text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer"
               >
                 −
               </button>
@@ -136,7 +137,7 @@ export default function ProductCard({ product }) {
               </span>
               <button
                 onClick={(e) => { e.stopPropagation(); addToCart(product) }}
-                className="w-7 h-7 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center transition cursor-pointer"
+                className="w-7 h-7 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center transition cursor-pointer"
               >
                 +
               </button>

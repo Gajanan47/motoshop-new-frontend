@@ -49,9 +49,6 @@ function Dropdown({ id, label, open, onToggle, children }) {
   const btnRef = useRef(null)
   const [coords, setCoords] = useState(null)
 
-  // Recalculate the panel's position off the trigger button whenever it
-  // opens, and keep it pinned while the filter bar scrolls horizontally
-  // or the window scrolls/resizes.
   useLayoutEffect(() => {
     if (!open) return
 
@@ -82,6 +79,7 @@ function Dropdown({ id, label, open, onToggle, children }) {
       </button>
       {open && coords && createPortal(
         <div
+          data-dropdown-panel
           style={{ position: "fixed", top: coords.top, left: coords.left }}
           className="w-56 bg-white border border-slate-200 rounded-lg shadow-lg z-50 p-2 max-h-72 overflow-y-auto"
         >
@@ -117,10 +115,14 @@ export default function Sidebar({ filters, setFilters, resultCount }) {
     setOpenDropdown((prev) => (prev === id ? null : id))
   }
 
-  // close any open dropdown when clicking outside the filter bar
+  // Close any open dropdown when clicking outside the filter bar —
+  // including outside the portaled panel, which lives in document.body
+  // and is NOT a DOM descendant of containerRef, so it needs its own check.
   useEffect(() => {
     function handleClickOutside(e) {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
+      const insideBar = containerRef.current && containerRef.current.contains(e.target)
+      const insidePanel = e.target.closest?.("[data-dropdown-panel]")
+      if (!insideBar && !insidePanel) {
         setOpenDropdown(null)
       }
     }

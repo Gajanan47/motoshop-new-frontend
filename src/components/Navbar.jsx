@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
 import {fetchProducts} from '../api/products'
 import { MdShoppingCart } from "react-icons/md";
 import {MdAccountCircle} from "react-icons/md"
+import MotoShop_logo from "../assets/MotoShop_logo.png"
 import NotificationBell from './NotificationBell'
 export default function Navbar() {
   const { cartCount, setIsCartOpen } = useCart()
@@ -19,6 +20,7 @@ export default function Navbar() {
   const name = localStorage.getItem("userName")
   const isLoginPage = location.pathname === '/login'
   const isHomePage = location.pathname === '/'
+  const isRegisterPage = location.pathname === '/register'
 
   // sync search input with URL param when on home page
   useEffect(() => {
@@ -104,7 +106,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 h-20 border-b border-slate-200/70 bg-[#f7f9fb]/80 px-5 shadow-sm backdrop-blur-xl sm:px-8 lg:px-16">
+    <nav className="sticky top-0 z-50 h-20 border-b rounded-md border-slate-200/70 bg-[#f7f9fb]/80 px-5 shadow-sm backdrop-blur-xl sm:px-8 lg:px-16">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-3">
 
       {/* Logo */}
@@ -112,42 +114,31 @@ export default function Navbar() {
         onClick={handleLogoClick}
         className="group flex cursor-pointer shrink-0 flex-col items-center leading-none"
       >
-        <svg
-          viewBox="0 0 64 34"
-          className={`logo-bike h-5 w-10 text-[#005ab4] transition-transform duration-500 ease-out group-hover:translate-x-1.5 sm:h-6 sm:w-12 ${logoDriving ? 'driving' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {/* frame */}
-          <path d="M18 24 L28 12 L40 12 L34 24 M28 12 L24 6 L30 6 M40 12 L46 18 L52 18" />
-          {/* rear wheel */}
-          <g className="wheel">
-            <circle cx="12" cy="24" r="8" />
-            <path d="M12 16v16M4 24h16M6.3 18.3l11.4 11.4M6.3 29.7l11.4-11.4" strokeWidth="1.2" />
-          </g>
-          {/* front wheel */}
-          <g className="wheel">
-            <circle cx="48" cy="24" r="8" />
-            <path d="M48 16v16M40 24h16M42.3 18.3l11.4 11.4M42.3 29.7l11.4-11.4" strokeWidth="1.2" />
-          </g>
-        </svg>
-        <span className="font-display text-2xl font-bold tracking-tight text-[#005ab4]">
-          MotoShop
-        </span>
+          <img
+    src={MotoShop_logo}
+    alt="MotoShop — Two & Four Wheeler E-Commerce"
+    className={`h-12 sm:h-16 md:h-20 lg:h-22 w-auto  object-contain transition-transform duration-500 ease-out hover:translate-x-1.5 ${logoDriving ? 'driving' : ''}`}
+  />
       </span>
 
       <div className="hidden items-center gap-7 text-sm md:flex">
-        <button onClick={() => navigate('/')} className="border-b-2 border-[#005ab4] py-2 font-semibold text-[#005ab4]">Showroom</button>
+        <button
+          onClick={() => navigate('/showroom')}
+          className={`py-2 font-semibold transition ${
+            location.pathname === '/showroom'
+              ? 'border-b-2 border-[#005ab4] text-[#005ab4]'
+              : 'text-slate-600 hover:text-[#005ab4]'
+          }`}
+        >
+          Showroom
+        </button>
         {/* <button className="text-slate-600 transition hover:text-[#005ab4]">Collections</button>
         <button className="text-slate-600 transition hover:text-[#005ab4]">Pre-Owned</button>
         <button className="text-slate-600 transition hover:text-[#005ab4]">Finance</button> */}
       </div>
 
       {/* Search bar — Amazon style, takes up center space */}
-      {!isLoginPage && (
+      {!isLoginPage && !isRegisterPage && (
           <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md lg:max-w-xl xl:max-w-2xl mx-4 lg:mx-10 ">
         <div className="relative w-full">
           <input
@@ -155,7 +146,7 @@ export default function Navbar() {
             value={searchInput}
             onChange={(e)=>handleSearchChange(e)}
             placeholder="Search vehicles by name or brand..."
-            className="h-10 w-full rounded-full border-0 bg-slate-200/70 pl-5 pr-10 text-sm text-slate-900 placeholder-slate-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#005ab4]/20"
+            className="h-10 w-full rounded-full border-0  bg-slate-200/70 pl-5 pr-10 text-sm text-slate-900 placeholder-slate-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#005ab4]/20"
           />
           {
             suggestions.length > 0 && (
@@ -224,13 +215,16 @@ export default function Navbar() {
             <span className="hidden lg:inline">Wishlist</span>
           </button>
         )}
-        <div className="relative">
+        <div className="relative ">
           {name ? (
             <div onClick={() => setIsAccountOpen(!isAccountOpen)}>
-              <button className="hidden sm:flex items-center h-10 lg:h-11 px-2 lg:px-2   hover:border-blue-400 transition">
-                <span className="text-[10px] flex flex-row sm:text-xs  text-slate-500 truncate">
+              <button className=" sm:flex items-center h-10 lg:h-11 px-2 lg:px-2   hover:border-blue-400 transition">
+                
+                    <span className="hidden  text-[10px] lg:flex flex-row  sm:text-xs text-slate-500 truncate">
                   Hi {name}
                 </span><MdAccountCircle className="text-3xl" />
+                
+                
               </button>
 
               {isAccountOpen && (
@@ -254,8 +248,7 @@ export default function Navbar() {
                       localStorage.removeItem("userName")
                       localStorage.removeItem("userEmail")
                       setIsAccountOpen(false)
-                      navigate("/login")
-                      window.location.reload()
+                      window.location.href = "/login"
                     }}
                   >
                     Logout

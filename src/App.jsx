@@ -19,7 +19,9 @@ import OrderDetails from "./pages/OrderDetails"
 import AdminProtectedRoute from "./pages/AdminProtectedRoute"
 import Compare from "./pages/Compare"
 import Navbar from "./components/Navbar"
-
+import Showroom from "./pages/Showroom"
+import ChatBot from "./components/ChatBot"
+import WelcomeIntro from "./pages/welcomeIntro"
 import { WishlistProvider } from "./context/WishlistContext"
 import { CompareProvider } from "./context/CompareContext"
 import CompareTray from "./components/CompareTray"
@@ -40,11 +42,13 @@ function AppContent() {
       <Routes>
         <Route path="/login" element={<><Navbar /><Login /></>} />
         <Route path="/register" element={<><Navbar /><Register /></>} />
+        <Route path="/welcome" element ={<ProtectedRoute><WelcomeIntro/></ProtectedRoute>}/>
         <Route path="/my-orders" element={<ProtectedRoute><Navbar /><MyOrders /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Navbar /><Profile /></ProtectedRoute>} />
         <Route path="/account/addresses" element={<><Navbar /><Addresses /></>} />
         <Route path="/account/reauth" element={<ReAuth />} />
         <Route path="/account/login-security" element={<><Navbar /><LoginSecurity /></>} /> 
+        <Route path = "/showroom" element={<><Navbar/><Showroom/> </>}/>
         <Route path="/" element={<><Navbar /><Home /></>} />
          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/products/:id" element={<><Navbar /><ProductDetails /></>} />
@@ -55,7 +59,7 @@ function AppContent() {
         <Route path="/admin/orders/:id" element={<AdminProtectedRoute><OrderDetails /></AdminProtectedRoute>} /> 
       </Routes>
 
-      {/* {showChatBot && <ChatBot />} */}
+      {showChatBot && <ChatBot />}
       <CompareTray/>
       <CartModal/>
       

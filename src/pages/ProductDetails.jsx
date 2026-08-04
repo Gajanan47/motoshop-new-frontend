@@ -6,6 +6,7 @@ import { useWishlist } from '../context/WishlistContext'
 import { useCompare } from '../context/CompareContext'
 import SimilarProducts from '../components/SimilarProducts'
 import ReviewSection from '../components/ReviewSection'
+import { getSpecFields } from "../utils/vehicleSpecs"
 import { FaHeart, FaRegHeart, FaStar, FaRegStar, FaShoppingBag } from 'react-icons/fa'
 import {
   MdCompareArrows,
@@ -32,7 +33,8 @@ const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState('')
   const [loading, setLoading] = useState(true)
   const [similarProducts, setSimilarProducts] = useState([])
-
+  const [zoom, setzoom] = useState(false)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
   const cartItem = product ? cart.find((item) => item.id === product.id) : null
   const qty = cartItem ? cartItem.qty : 0
   const isWishlisted = product ? wishlistIds.has(product.id) : false
@@ -90,8 +92,8 @@ const ProductDetails = () => {
   const images = Array.isArray(product.images)
     ? product.images
     : product.image
-    ? [product.image]
-    : []
+      ? [product.image]
+      : []
 
   // Highlight tiles — only rendered when the product actually has the data.
   const highlights = [
@@ -108,6 +110,14 @@ const ProductDetails = () => {
       <FaRegStar key={n} className="text-[#c3c6d7] text-[14px]" />
     )
   )
+  const handleMouseMove = (e) => {
+    const { left, top, height, width } =
+      e.target.getBoundingClientRect();
+
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setPosition({ x, y })
+  }
 
   return (
     <div className="bg-[#f7f9fb] min-h-screen" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
@@ -131,7 +141,7 @@ const ProductDetails = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(img)}
-                    className={`flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-xl border-2 overflow-hidden bg-white transition-colors
+                    className={`flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-xl border-2 overflow-hidden bg-slate-100 transition-colors
                       ${selectedImage === img ? 'border-[#004ac6]' : 'border-[#e0e3e5] hover:border-[#004ac6]/60'}`}
                   >
                     <img src={img} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-contain p-1" />
@@ -140,20 +150,44 @@ const ProductDetails = () => {
               </div>
             )}
 
-            <div className="flex-1 bg-[#eceef0] rounded-3xl overflow-hidden flex items-center justify-center p-8">
-              <img 
-                src={selectedImage}
-                alt={product.name}
-                className="w-full h-auto max-h-[520px] object-contain transition-transform duration-500 hover:scale-110"
-              />
+            <div className="flex-1 bg-[#eceef0] rounded-3xl  flex items-center justify-center p-8">
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img
+                  src={selectedImage}
+                  alt={product.name}
+                  onMouseMove={handleMouseMove}
+                  onMouseEnter={() => setzoom(true)}
+                  onMouseLeave={() => setzoom(false)}
+                  className="w-full h-auto max-h-[520px] object-contain transition-transform cursor-pointer"
+                />
+                
+
+            {zoom && (
+                  <div
+                    className="absolute left-full ml-10 w-full h-full border rounded-lg shadow-xl bg-white z-50 hidden lg:block"
+                    style={{
+                      backgroundImage: `url(${selectedImage})`,
+                      backgroundPosition: `${position.x}% ${position.y}%`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "300%"
+                    }}
+                  />
+                )}
+              </div>
+                
+              
             </div>
           </div>
 
           {/* Right — Details */}
           <div className="lg:col-span-5 flex flex-col gap-6">
+            
             <div>
+              
               <div className="flex items-start justify-between gap-3">
+                
                 <div>
+                  
                   <span className="text-xs font-extrabold uppercase tracking-widest text-[#9d4300]">
                     {product.company}
                   </span>
@@ -161,15 +195,16 @@ const ProductDetails = () => {
                     {product.name}
                   </h1>
                 </div>
+                
                 <div className="flex items-center gap-2 shrink-0">
+                  
                   <button
                     onClick={() => toggleCompare(product)}
                     title={isComparing ? 'Remove from compare' : 'Add to compare'}
-                    className={`w-11 h-11 rounded-full border shadow-sm flex items-center justify-center transition hover:scale-110 ${
-                      isComparing
-                        ? 'bg-[#004ac6] border-[#004ac6] text-white'
-                        : 'bg-white border-[#e0e3e5] text-[#434655]'
-                    }`}
+                    className={`w-11 h-11 rounded-full border shadow-sm flex items-center justify-center transition hover:scale-110 ${isComparing
+                      ? 'bg-[#004ac6] border-[#004ac6] text-white'
+                      : 'bg-white border-[#e0e3e5] text-[#434655]'
+                      }`}
                   >
                     <MdCompareArrows className="text-xl" />
                   </button>
@@ -262,7 +297,10 @@ const ProductDetails = () => {
               >
                 Buy Now
               </button>
+              
             </div>
+            
+            
 
             {/* Quick services */}
             <div className="grid grid-cols-2 gap-4">
@@ -280,7 +318,10 @@ const ProductDetails = () => {
                   <p className="text-xs text-[#434655]">Inspected by MotoShop</p>
                 </div>
               </div>
+              
+
             </div>
+                          
           </div>
         </section>
 
@@ -304,7 +345,27 @@ const ProductDetails = () => {
             </div>
           </section>
         )}
-
+        {(() => {
+          const filledSpecs = getSpecFields(product.type).filter(
+            (f) => product.specs?.[f.key] !== undefined && product.specs?.[f.key] !== null && product.specs?.[f.key] !== ""
+          )
+          if (filledSpecs.length === 0) return null
+          return (
+            <section className="mb-20">
+              <h2 className="text-3xl font-bold text-[#191c1e] mb-8">Detailed Specifications</h2>
+              <div className="grid sm:grid-cols-2 gap-x-12 gap-y-4 bg-[#eceef0] rounded-3xl border border-[#e0e3e5] p-6 sm:p-8">
+                {filledSpecs.map((f) => (
+                  <div key={f.key} className="flex items-center justify-between border-b border-[#e0e3e5] pb-3">
+                    <span className="text-[#434655] text-sm">{f.label}</span>
+                    <span className="font-semibold text-[#191c1e]">
+                      {product.specs[f.key]}{f.unit ? ` ${f.unit}` : ""}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        })()}
         {/* Description */}
         {product.description && (
           <section className="mb-20 max-w-3xl">

@@ -60,7 +60,7 @@ const ChatBot = () => {
         <section className="mb-3 w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20">
           <div className="flex items-center justify-between bg-slate-950 px-4 py-3 text-white">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-lg font-bold">
+              <div className="flex h-10 w-10 items-center justify-center rounded-fulblue-500 text-lg font-bold">
                 AI
               </div>
               <div>
@@ -87,7 +87,7 @@ const ChatBot = () => {
                 <div
                   className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                     message.role === "user"
-                      ? "rounded-br-md bg-orange-500 text-white"
+                      ? "rounded-br-md bg-blue-500 text-white"
                       : "rounded-bl-md border border-slate-200 bg-white text-slate-700"
                   }`}
                 >
@@ -122,12 +122,12 @@ const ChatBot = () => {
                 }}
                 rows="1"
                 placeholder="Ask about bikes, cars, budget..."
-                className="max-h-24 min-h-11 flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:bg-white"
+                className="max-h-24 min-h-11 flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white"
               />
               <button
                 type="submit"
                 disabled={!text.trim() || loading}
-                className="h-11 rounded-xl bg-orange-500 px-4 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+                className="h-11 rounded-xl bg-blue-500 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
               >
                 Send
               </button>
@@ -139,7 +139,7 @@ const ChatBot = () => {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-lg font-bold text-white shadow-xl shadow-orange-300/60 transition hover:-translate-y-0.5 hover:bg-orange-600"
+        className="ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-500 text-lg font-bold text-white shadow-xl shadow-blue-300/60 transition hover:-translate-y-0.5 hover:bg-blue-600"
         aria-label={isOpen ? "Hide chatbot" : "Open chatbot"}
       >
         {isOpen ? "x" : "AI"}

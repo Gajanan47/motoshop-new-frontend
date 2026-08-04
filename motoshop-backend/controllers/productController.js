@@ -46,12 +46,14 @@ Rules:
 - Do not repeat these instructions, do not explain your reasoning, do not restate the facts as a list.
 - Do not use labels like "Name:" or "Brand:", markdown, asterisks, or bullet points.
 - Write 2-3 flowing sentences, like real ad copy a shopper would read on a product page.
-- Do not invent specifications, features, or numbers beyond what's given above.
+- You can write some specifications which are not mentioned but you know them or can know by searching.
+- Do write atleast 2 paragraphs of description
 
 Example of the style and format expected (different vehicle, for reference only):
 "The Hero Splendor Plus is a dependable commuter bike built for everyday city rides. With a fuel-efficient 97cc engine, it delivers smooth performance at an accessible price point, making it a practical choice for daily commuting."
 
 Now write the description for the vehicle described above, in that same style:
+
 `
 
     const response = await fetch(
@@ -61,15 +63,19 @@ Now write the description for the vehicle described above, in that same style:
         signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          generationConfig: { temperature: 0.6, maxOutputTokens: 200 },
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1024,
+            thinkingConfig: {
+              thinkingBudget:0 
+          } },
           contents: [{ role: "user", parts: [{ text: prompt }] }],
         }),
       }
     )
-
+    console.log(geminiModel)
     const data = await response.json()
     console.log(response)
     console.log("data",data)
+    console.log(JSON.stringify(data, null, 2));
     if (!response.ok) {
       return res.status(response.status).json({
         success: false,
@@ -153,10 +159,19 @@ function buildImages(req) {
   return [...bodyImages, ...uploaded]
 }
 
+function parseSpecs(specs) {
+  if (!specs) return "{}"
+  try {
+    return JSON.stringify(typeof specs === "string" ? JSON.parse(specs) : specs)
+  } catch {
+    return "{}"
+  }
+}
+
 const addProduct = async (req, res) => {
   try {
     const { name, company, type, cc, fuel, use_case,
-            price, rating, reviews, badge, description } = req.body
+            price, rating, reviews, badge, description, specs } = req.body
     const images = buildImages(req)
     // images = array of URLs from frontend e.g. ["url1", "url2"]
 
@@ -168,10 +183,10 @@ const addProduct = async (req, res) => {
     const image = images?.[0] || null
     const [result] = await db.query(
       `INSERT INTO products
-        (name, company, type, cc, fuel, use_case, price, rating, reviews, badge, description, image)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (name, company, type, cc, fuel, use_case, price, rating, reviews, badge, description, image, specs)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [name, company, type, cc || 0, fuel, use_case,
-       price, rating || 0, reviews || 0, badge || "", description || "", image]
+       price, rating || 0, reviews || 0, badge || "", description || "", image, parsePrecs()]
     )
 
     const productId = result.insertId
@@ -199,7 +214,7 @@ const updateProduct = async (req, res) => {
   try {
     const { id } = req.params
     const { name, company, type, cc, fuel,
-            use_case, price, rating, reviews, badge, description } = req.body
+            use_case, price, rating, reviews, badge, description, specs } = req.body
 
     const [existing] = await db.query("SELECT * FROM products WHERE id = ?", [id])
     if (existing.length === 0)
@@ -210,10 +225,12 @@ const updateProduct = async (req, res) => {
     await db.query(
       `UPDATE products SET
         name=?, company=?, type=?, cc=?, fuel=?,
-        use_case=?, price=?, rating=?, reviews=?, badge=?, description=?, image=?
+        use_case=?, price=?, rating=?, reviews=?, badge=?, description=?, image=?, specs=?
        WHERE id=?`,
       [name, company, type, cc, fuel, use_case, price, rating, reviews, badge,
-       description ?? existing[0].description, images?.[0] || existing[0].image, id]
+       description ?? existing[0].description, images?.[0] || existing[0].image,
+        specs !== undefined ? parseSpecs(specs) : (existing[0].specs ?  JSON.stringify(existing[0].specs) : "{}"),
+         id]
     )
 
     // replace old images with new ones

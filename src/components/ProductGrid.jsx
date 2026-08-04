@@ -31,13 +31,13 @@ export default function ProductGrid({ products }) {
           <p>No vehicles match your filters</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 ">
           {displayedProducts.map((product, index) => (
             <React.Fragment key={product.id}>
               <ProductCard product={product} />
               {/* promo tile after the 4th card on the first page, like the reference layout */}
               {currentPage === 1 && index === 3 && (
-                <div className="relative rounded-xl overflow-hidden col-span-1 lg:col-span-2 min-h-40 flex items-end p-5 text-white bg-blue-900">
+                <div className="relative rounded-xl overflow-hidden col-span-1 2xl:col-span-2 min-h-40 flex items-end p-5 text-white bg-blue-900">
                   <div
                     className="absolute inset-0 bg-cover bg-center opacity-40"
                     style={{ backgroundImage: "url('https://images.unsplash.com/photo-1558980664-10e7170b5df9?w=800&q=80')" }}

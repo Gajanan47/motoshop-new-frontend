@@ -9,13 +9,15 @@ import {
 } from "../api/products"
 import { fetchOrders, updateOrderStatus } from "../api/orders"
 import NotificationBell from "../components/NotificationBell"
-
+import { getSpecFields } from "../utils/vehicleSpecs"
+import MotoShop_logo from "../assets/MotoShop_logo.png"
 const emptyForm = {
   name: "", company: "", type: 2, cc: 0,
   fuel: "Petrol", use_case: "Commuter",
   price: "", rating: 0, reviews: 0, badge: "",
   description: "",
-  images: [""]
+  specs: {},
+  images: [""],
 }
 
 export default function AdminDashboard() {
@@ -36,7 +38,7 @@ export default function AdminDashboard() {
   const [imageFiles, setImageFiles] = useState([])
   const [generatingDescription, setGeneratingDescription] = useState(false)
   const [generateError, setGenerateError] = useState("")
-
+  const [logoDriving, setLogoDriving] = useState(false)
   async function handleGenerateDescription() {
     if (!form.name || !form.company) {
       setGenerateError("Enter at least the name and company first")
@@ -140,12 +142,25 @@ export default function AdminDashboard() {
       setForm((prev) => ({ ...prev, cc: val }))
     }
   }
+  function handleSpecChange(key, value) {
+    setForm((prev) => ({ ...prev, specs: { ...prev.specs, [key]: value } }))
+  }
 
   function openAddForm() {
     setForm(emptyForm)
     setImageFiles([])
     setEditingProduct(null)
     setShowForm(true)
+  }
+
+  function handleLogoClick() {
+    if (logoDriving) return // ignore repeat clicks mid-animation
+    setLogoDriving(true)
+    setTimeout(() => {
+      navigate('/')
+      setSearchInput("")
+      setLogoDriving(false) // reset the bike back to its resting position
+    }, 550)
   }
 
   function openEditForm(product) {
@@ -161,6 +176,7 @@ export default function AdminDashboard() {
       reviews: product.reviews,
       badge: product.badge,
       description: product.description || "",
+      specs: product.specs || {},
       images: product.images?.length
         ? product.images.filter(Boolean)
         : [""]
@@ -192,6 +208,7 @@ export default function AdminDashboard() {
           data.append(key, value)
         }
       })
+      data.append("specs", JSON.stringify(form.specs || {}))
 
       form.images.filter(Boolean).forEach((url) => data.append("images", url))
       imageFiles.forEach((file) => data.append("images", file))
@@ -356,11 +373,17 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-100">
 
       {/* Navbar */}
-      <nav className="bg-white border-b border-slate-200 px-4 sm:px-6 sm:h-14 flex flex-col sm:flex-row sm:items-center justify-between sticky top-0 z-10 gap-3">
-        <h1 className="text-base sm:text-lg font-bold flex items-center justify-between w-full sm:w-auto">
-          <span>MOTO<span className="text-orange-500">SHOP</span><span className="text-slate-400 text-xs font-normal ml-1">Admin</span></span>
-          <span className="text-xs font-normal text-slate-400 sm:hidden block truncate max-w-37.5">{adminEmail}</span>
-        </h1>
+      <nav className="bg-white border-b border-slate-200 px-4 sm:px-6 h-20 flex flex-col sm:flex-row sm:items-center justify-between sticky top-0 z-10 gap-3">
+       <span
+               onClick={handleLogoClick}
+               className="group flex cursor-pointer shrink-0 flex-col items-center leading-none"
+             >
+                 <img
+           src={MotoShop_logo}
+           alt="MotoShop — Two & Four Wheeler E-Commerce"
+           className={`h-12 sm:h-16 md:h-20 lg:h-22 w-auto  object-contain transition-transform duration-500 ease-out hover:translate-x-1.5 ${logoDriving ? 'driving' : ''}`}
+         />
+             </span>
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
           <div className="flex gap-2">
             {localStorage.getItem("adminToken") && (
@@ -368,7 +391,7 @@ export default function AdminDashboard() {
             )}
             <button
               onClick={refreshAll}
-              className="text-xs sm:text-sm px-3 py-1.5 border border-slate-200 rounded-lg text-slate-500 hover:border-orange-400 hover:text-orange-500 transition cursor-pointer"
+              className="text-xs sm:text-sm px-3 py-1.5 border border-slate-200 rounded-lg text-slate-500 hover:border-blue-400 hover:text-blue-500 transition cursor-pointer"
             >
               ⟳ Refresh
             </button>
@@ -386,7 +409,7 @@ export default function AdminDashboard() {
 
       {loading && (
         <div>
-          <p className="p-2 bg-orange-500 text-white text-center text-xs font-medium animate-pulse">Loading...</p>
+          <p className="p-2 bg-blue-500 text-white text-center text-xs font-medium animate-pulse">Loading...</p>
         </div>
       )}
 
@@ -409,19 +432,19 @@ export default function AdminDashboard() {
         <div className="flex gap-2 overflow-x-auto pb-1 mb-6 no-scroller shrink-0">
           <button
             onClick={() => setTab("overview")}
-            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${tab === "overview" ? "bg-orange-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
+            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${tab === "overview" ? "bg-blue-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
           >
             📊 Overview
           </button>
           <button
             onClick={() => setTab("products")}
-            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${tab === "products" ? "bg-orange-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
+            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${tab === "products" ? "bg-blue-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
           >
             🏍 Products ({products.length})
           </button>
           <button
             onClick={() => setTab("orders")}
-            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${tab === "orders" ? "bg-orange-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
+            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${tab === "orders" ? "bg-blue-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
           >
             📦 Orders ({orders.length})
           </button>
@@ -476,7 +499,7 @@ export default function AdminDashboard() {
                         <span className="text-xs sm:text-sm text-slate-600 w-20 sm:w-28 truncate">{brand}</span>
                         <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-orange-500 rounded-full"
+                            className="h-full bg-blue-500 rounded-full"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -553,12 +576,12 @@ export default function AdminDashboard() {
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Search name or brand..."
-                  className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-orange-400 w-full sm:w-40"
+                  className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-400 w-full sm:w-40"
                 />
                 <select
                   value={productTypeFilter}
                   onChange={(e) => setProductTypeFilter(e.target.value)}
-                  className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-orange-400 cursor-pointer w-full sm:w-auto"
+                  className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-400 cursor-pointer w-full sm:w-auto"
                 >
                   <option value="all">All Types</option>
                   <option value="2">Two-wheeler</option>
@@ -566,7 +589,7 @@ export default function AdminDashboard() {
                 </select>
                 <button
                   onClick={openAddForm}
-                  className="col-span-2 sm:col-span-1 bg-orange-500 hover:bg-orange-600 text-white text-xs px-4 py-2 rounded-lg font-semibold shadow-xs cursor-pointer text-center"
+                  className="col-span-2 sm:col-span-1 bg-blue-500 hover:bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-semibold shadow-xs cursor-pointer text-center"
                 >
                   + Add Product
                 </button>
@@ -603,13 +626,13 @@ export default function AdminDashboard() {
                           </td>
                           <td className="px-4 py-3 text-slate-500">{p.type === 2 ? "🏍 2W" : "🚗 4W"}</td>
                           <td className="px-4 py-3 text-slate-500">{p.fuel}</td>
-                          <td className="px-4 py-3 font-bold text-orange-500">₹{p.price}L</td>
+                          <td className="px-4 py-3 font-bold text-blue-500">₹{p.price}L</td>
                           <td className="px-4 py-3">
-                            {p.badge ? <span className="bg-orange-50 text-orange-600 text-[10px] px-2 py-0.5 rounded font-semibold uppercase">{p.badge}</span> : <span className="text-slate-300">—</span>}
+                            {p.badge ? <span className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded font-semibold uppercase">{p.badge}</span> : <span className="text-slate-300">—</span>}
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex gap-1.5 justify-end">
-                              <button onClick={() => openEditForm(p)} className="px-2 py-1 border border-slate-200 rounded text-slate-600 hover:border-orange-400 hover:text-orange-500">Edit</button>
+                              <button onClick={() => openEditForm(p)} className="px-2 py-1 border border-slate-200 rounded text-slate-600 hover:border-blue-400 hover:text-blue-500">Edit</button>
                               <button onClick={() => handleDelete(p.id, p.name)} className="px-2 py-1 border border-slate-200 rounded text-slate-600 hover:border-red-400 hover:text-red-500">Drop</button>
                             </div>
                           </td>
@@ -632,14 +655,14 @@ export default function AdminDashboard() {
               {/* Right Column: Button Group (Stays together as a single block) */}
               <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end order-1 sm:order-2">
                 <button
-                  className="px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-slate-600 hover:border-orange-400 hover:text-orange-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 font-medium transition cursor-pointer"
+                  className="px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-slate-600 hover:border-blue-400 hover:text-blue-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 font-medium transition cursor-pointer"
                   onClick={() => setCurrentProductsPage(prev => Math.max(prev - 1, 1))} disabled={currentProductsPage === 1}
                 >
                   ← Prev
                 </button>
                 {/* ✅ FIXED VERSION: */}
                 <button
-                  className="px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-slate-600 hover:border-orange-400 hover:text-orange-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 font-medium transition cursor-pointer"
+                  className="px-3 py-1.5 border border-slate-200 bg-white rounded-lg text-slate-600 hover:border-blue-400 hover:text-blue-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 font-medium transition cursor-pointer"
                   onClick={() => setCurrentProductsPage(prev => Math.min(prev + 1, Math.ceil(filteredProducts.length / itemsPerPage)))}
                   disabled={currentProductsPage >= Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage))}
                 >
@@ -667,7 +690,7 @@ export default function AdminDashboard() {
                 <select
                   value={orderDateFilter}
                   onChange={(e) => setOrderDateFilter(e.target.value)}
-                  className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400 cursor-pointer transition hover:border-slate-300"
+                  className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 cursor-pointer transition hover:border-slate-300"
                 >
                   <option value="all">All Orders</option>
                   <option value="today">Today Only</option>
@@ -676,7 +699,7 @@ export default function AdminDashboard() {
 
                   onChange={(e) =>
                     setOrderStatusFilter(e.target.value)}
-                  className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400 cursor-pointer hover:border-slate-300 transition"
+                  className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 cursor-pointer hover:border-slate-300 transition"
                 >
                   <option value="all" > All </option>
                   <option value="Confirmed" > Confirmed </option>
@@ -698,7 +721,7 @@ export default function AdminDashboard() {
             ) : (
               <div className="space-y-3">
                 {displayedOrders.map((order) => (
-                  <div key={order.id} onClick={() => navigate(`/admin/orders/${order.id}`)} className="bg-white shadow-xs rounded-xl  p-4 border border-slate-100 hover:border-orange-300 transition cursor-pointer">
+                  <div key={order.id} onClick={() => navigate(`/admin/orders/${order.id}`)} className="bg-white shadow-xs rounded-xl  p-4 border border-slate-100 hover:border-blue-300 transition cursor-pointer">
                     <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
 
                       {/* Order info */}
@@ -716,7 +739,7 @@ export default function AdminDashboard() {
 
                       {/* Price + status update */}
                       <div className="text-right">
-                        <p className="font-bold text-orange-500 text-lg">
+                        <p className="font-bold text-blue-500 text-lg">
                           ₹{(parseFloat(order.total) + parseFloat(order.gst)).toFixed(2)}L
                         </p>
                         <p className="text-xs text-slate-400 mb-2">
@@ -726,7 +749,7 @@ export default function AdminDashboard() {
                           value={order.status}
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600 cursor-pointer focus:outline-none focus:border-orange-400"
+                          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600 cursor-pointer focus:outline-none focus:border-blue-400"
                         >
                           <option>Confirmed</option>
                           <option>Processing</option>
@@ -735,7 +758,7 @@ export default function AdminDashboard() {
                           <option>Cancelled</option>
                         </select>
                         {statusloading && (
-                          <p className="text-xs text-orange-500 mt-2">Changing status...</p>
+                          <p className="text-xs text-blue-500 mt-2">Changing status...</p>
                         )}
                       </div>
                     </div>
@@ -756,7 +779,7 @@ export default function AdminDashboard() {
             )}
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
               <button
-                className="text-sm px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:border-orange-400 hover:text-orange-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 disabled:cursor-not-allowed cursor-pointer transition"
+                className="text-sm px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:border-blue-400 hover:text-blue-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 disabled:cursor-not-allowed cursor-pointer transition"
                 onClick={() => setCurrentOrdersPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentOrdersPage === 1}
               >
@@ -768,7 +791,7 @@ export default function AdminDashboard() {
               </span><span className="font-medium text-slate-">Total orders {filteredOrders.length}</span>
 
               <button
-                className="text-sm px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:border-orange-400 hover:text-orange-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 disabled:cursor-not-allowed cursor-pointer transition"
+                className="text-sm px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:border-blue-400 hover:text-blue-500 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600 disabled:cursor-not-allowed cursor-pointer transition"
                 onClick={() => setCurrentOrdersPage(prev =>
                   Math.min(prev + 1, Math.ceil(filteredOrders.length / itemsPerPage))
                 )}
@@ -811,7 +834,7 @@ export default function AdminDashboard() {
                 <div>
                   <label className="text-xs text-slate-500 font-medium block mb-1">Type</label>
                   <select name="type" value={form.type} onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-400">
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-400">
                     <option value={2}>Two-wheeler</option>
                     <option value={4}>Four-wheeler</option>
                   </select>
@@ -819,7 +842,7 @@ export default function AdminDashboard() {
                 <div>
                   <label className="text-xs text-slate-500 font-medium block mb-1">Fuel</label>
                   <select name="fuel" value={form.fuel} onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-400">
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-400">
                     <option>Petrol</option>
                     <option>Electric</option>
                     <option>Diesel</option>
@@ -837,7 +860,7 @@ export default function AdminDashboard() {
                 <div>
                   <label className="text-xs text-slate-500 font-medium block mb-1">Use case</label>
                   <select name="use_case" value={form.use_case} onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-400">
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-400">
                     <option>Commuter</option>
                     <option>Sport</option>
                     <option>Adventure</option>
@@ -847,7 +870,7 @@ export default function AdminDashboard() {
                 <div>
                   <label className="text-xs text-slate-500 font-medium block mb-1">Badge</label>
                   <select name="badge" value={form.badge} onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-400">
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-400">
                     <option value="">None</option>
                     <option value="new">New</option>
                     <option value="hot">Hot</option>
@@ -858,6 +881,31 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Rating (0-5)" name="rating" min="0" max="5" step="0.1" value={form.rating} onChange={handleRatingChange} placeholder="e.g. 4.5" type="number" />
+                {/* Specs — the fields shown depend on Type (2-wheeler vs 4-wheeler) */}
+                <div>
+                  <label className="text-xs text-slate-500 font-medium block mb-2">
+                    Specifications ({form.type == 4 ? "Four-wheeler" : "Two-wheeler"})
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {getSpecFields(form.type).map((f) => (
+                      <div key={f.key}>
+                        <label className="text-[11px] text-slate-400 block mb-1">
+                          {f.label}{f.unit ? ` (${f.unit})` : ""}
+                        </label>
+                        <input
+                          type={f.type}
+                          value={form.specs?.[f.key] ?? ""}
+                          onChange={(e) => handleSpecChange(f.key, e.target.value)}
+                          placeholder={f.placeholder}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Optional — leave blank to omit from the product page. Switching Type above changes which fields appear here.
+                  </p>
+                </div>
                 <Field label="Reviews" name="reviews" value={form.reviews} onChange={handleChange} placeholder="e.g. 650" type="number" />
               </div>
 
@@ -869,7 +917,7 @@ export default function AdminDashboard() {
                     type="button"
                     onClick={handleGenerateDescription}
                     disabled={generatingDescription}
-                    className="text-xs font-medium text-orange-600 hover:text-orange-700 disabled:text-slate-400 disabled:cursor-not-allowed transition cursor-pointer"
+                    className="text-xs font-medium text-blue-600 hover:text-blue-700 disabled:text-slate-400 disabled:cursor-not-allowed transition cursor-pointer"
                   >
                     {generatingDescription ? "Generating..." : "✨ Generate with AI"}
                   </button>
@@ -880,7 +928,7 @@ export default function AdminDashboard() {
                   onChange={handleChange}
                   placeholder="Write product description, or fill the fields above and click Generate with AI..."
                   rows={3}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-400 transition resize-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition resize-none"
                 />
                 {generateError && (
                   <p className="text-xs text-red-500 mt-1">{generateError}</p>
@@ -898,7 +946,7 @@ export default function AdminDashboard() {
                   accept="image/*"
                   multiple
                   onChange={(e) => setImageFiles((prev) => [...prev, ...Array.from(e.target.files)])}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-400 transition"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-400 transition"
                 />
                 {imageFiles.length > 0 && (
                   <div className="mt-3 space-y-2 text-slate-600 text-sm">
@@ -948,11 +996,11 @@ export default function AdminDashboard() {
 
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowForm(false)}
-                  className="flex-1 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-sm hover:border-orange-400 transition cursor-pointer">
+                  className="flex-1 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-sm hover:border-blue-400 transition cursor-pointer">
                   Cancel
                 </button>
                 <button type="submit" disabled={formLoading}
-                  className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 text-white font-semibold rounded-xl text-sm transition cursor-pointer">
+                  className="flex-1 py-2.5 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-200 text-white font-semibold rounded-xl text-sm transition cursor-pointer">
                   {formLoading ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
                 </button>
               </div>
@@ -975,7 +1023,7 @@ function Field({ label, name, value, onChange, placeholder, type = "text", requi
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-400 transition"
+        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition"
       />
     </div>
   )
@@ -984,7 +1032,7 @@ function Field({ label, name, value, onChange, placeholder, type = "text", requi
 function StatCard({ label, value, icon, warn, onClick }) {
   return (
 
-    <div onClick={onClick} className={`bg-white rounded-2xl shadow-sm p-4 border hover:border-orange-400 hover:-translate-y-0.5 ${warn ? "border-red-200" : "border-transparent"}  ${onClick ? "cursor-pointer " : ""}`}>
+    <div onClick={onClick} className={`bg-white rounded-2xl shadow-sm p-4 border hover:border-blue-400 hover:-translate-y-0.5 ${warn ? "border-red-200" : "border-transparent"}  ${onClick ? "cursor-pointer " : ""}`}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-slate-500 font-medium">{label}</span>
         <span className="text-lg">{icon}</span>

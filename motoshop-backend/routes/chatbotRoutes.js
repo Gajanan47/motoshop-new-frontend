@@ -106,6 +106,9 @@ ${message}
           generationConfig: {
             temperature: 0.4,
             maxOutputTokens: 500,
+            thinkingConfig : {
+              thinkingBudget:0
+            },
           },
           contents: [
             {
