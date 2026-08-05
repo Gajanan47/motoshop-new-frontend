@@ -33,7 +33,7 @@ export default function Hero({ featured = [] }) {
   useEffect(() => {
     const interval = setInterval(()=>{
       setCurrentImage((prev)=>(prev+1) % heroBg.length)
-    }, 80000);
+    }, 40000);
   
     return () => {
       clearInterval(interval)

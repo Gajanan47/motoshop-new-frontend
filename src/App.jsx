@@ -41,7 +41,7 @@ function AppContent() {
     <>
       <Routes>
         <Route path="/login" element={<><Navbar /><Login /></>} />
-        <Route path="/register" element={<><Navbar /><Register /></>} />
+        <Route path="/register" element={<><Navbar /><Register /> </>} />
         <Route path="/welcome" element ={<ProtectedRoute><WelcomeIntro/></ProtectedRoute>}/>
         <Route path="/my-orders" element={<ProtectedRoute><Navbar /><MyOrders /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Navbar /><Profile /></ProtectedRoute>} />

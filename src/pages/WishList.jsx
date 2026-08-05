@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useWishlist } from "../context/WishlistContext"
 import ProductCard from "../components/ProductCard"
-
+import Footer from "../components/Footer"
 export default function WishList() {
   const { wishlistProducts, loading } = useWishlist()
   const navigate = useNavigate()
@@ -31,6 +31,7 @@ export default function WishList() {
           ))}
         </div>
       )}
+      <Footer/>
     </div>
   )
 }

@@ -35,14 +35,14 @@ export default function ProductCard({ product }) {
   return (
     <div
       onClick={() => navigate(`/products/${product.id}`)}
-      className="group flex bg-white border border-slate-200 rounded-2xl hover:shadow-2xl hover:border-blue-200 overflow-hidden hover:-translate-y-1  transition-all duration-200 cursor-pointer"
+      className="group flex flex-col sm:flex-row bg-white border border-slate-200 rounded-2xl hover:shadow-2xl hover:border-blue-200 overflow-hidden hover:-translate-y-1 transition-all duration-200 cursor-pointer"
     >
-      {/* Image — left */}
-      <div className="relative w-56 sm:w-72 lg:w-96 min-h-56 sm:min-h-72 lg:min-h-80 shrink-0 self-stretch overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Image — full-width banner on mobile, fixed-width side panel from sm up */}
+      <div className="relative w-full h-56 sm:w-72 sm:h-auto sm:min-h-72 lg:w-96 lg:min-h-80 shrink-0 self-stretch overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full p-3 h-full object-contain group-hover:scale-105 transition-all duration-500"
+          className="w-full h-full object-contain p-3 group-hover:scale-105 transition-all duration-500"
         />
         {product.badge && (
           <span className={`absolute top-2.5 left-2.5 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md shadow-sm ${badgeStyle[product.badge]}`}>
@@ -51,8 +51,8 @@ export default function ProductCard({ product }) {
         )}
       </div>
 
-      {/* Content — right */}
-      <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between min-w-[260px]">
+      {/* Content — right on desktop, below the image on mobile */}
+      <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between sm:min-w-[260px]">
         <div className="min-w-0">
           <div className="flex items-start justify-between gap-2">
             <p className="text-[10px] text-blue-600 uppercase tracking-widest font-semibold">

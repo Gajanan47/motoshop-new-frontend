@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchMyAddresses, addAddress, deleteAddress, setDefaultAddress } from '../api/addresses'
-
+import Footer from '../components/Footer'
 const emptyForm = {
   full_name: "", phone: "", address_line: "", city: "", state: "", pincode: ""
 }
@@ -176,6 +176,7 @@ const Addresses = () => {
         )}
 
       </div>
+      <Footer/>
     </div>
   )
 }

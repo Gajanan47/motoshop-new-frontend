@@ -8,6 +8,7 @@ import { useCompare } from "../context/CompareContext"
 import Hero from "../components/Hero"
 import SideBar from "../components/SideBar"
 import { MdCompareArrows } from "react-icons/md"
+import Footer from "../components/Footer"
 
 const defaultFilters = { type: "all", cc: "all", brand: "all", price: 100, fuel: "all", use: "all" }
 
@@ -50,7 +51,7 @@ function BikeCard({ product, compact = false }) {
             </button>
           </div>
         </div>
-        <p className="min-h-10 text-sm leading-5 text-slate-500">{product.description || `${product.use_case || "Premium"} performance, engineered for every ride.`}</p>
+        {/* <p className="min-h-10 text-sm leading-5 text-slate-500">{product.description || `${product.use_case || "Premium"} performance, engineered for every ride.`}</p> */}
         <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-medium text-slate-600">
           <span className="rounded bg-slate-100 px-2 py-1">{product.cc} CC</span>
           <span className="rounded bg-slate-100 px-2 py-1">{product.fuel}</span>
@@ -292,7 +293,7 @@ export default function Home() {
         </section>}
         <Row eyebrow="New arrivals" title="Latest Launches" products={catalogue.slice(0, 6)} viewAllTo="/showroom?sort=latest" />
         <Row eyebrow="Pure power" title="Top CC Motorcycles" products={[...catalogue].sort((a, b) => (b.cc || 0) - (a.cc || 0)).slice(0, 6)} viewAllTo="/showroom?sort=topcc" />
-        <section className="mt-10 rounded-3xl bg-[#2d3133] px-6 py-12 text-white sm:px-10"><div className="grid gap-8 lg:grid-cols-2"><div>
+        {/* <section className="mt-10 rounded-3xl bg-[#2d3133] px-6 py-12 text-white sm:px-10"><div className="grid gap-8 lg:grid-cols-2"><div>
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-300">
             Exclusivity
           </p>
@@ -317,8 +318,9 @@ export default function Home() {
             )}
           </div>
         </div>
-        </section>
+        </section> */}
       </main>
+      <Footer/>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchMe, updateProfile, changePassword } from '../api/users'
-
+import Footer from '../components/Footer'
 const REAUTH_VALID_MS = 10 * 60 * 1000
 
 const LoginSecurity = () => {
@@ -269,6 +269,7 @@ const LoginSecurity = () => {
             </div>
           </div>
         )}
+        <Footer/>
     </div>
     
   )

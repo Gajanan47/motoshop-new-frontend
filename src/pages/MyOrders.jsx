@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { fetchMyOrders, cancelOrder } from "../api/orders"
+import Footer from "../components/Footer"
 
 const filters = [
   { label: "All", value: "all" },
@@ -131,6 +132,7 @@ export default function MyOrders() {
           </section>
         </div>
       </div>
+      <Footer/>
     </main>
   )
 }
@@ -185,6 +187,7 @@ function OrderCard({ order, onCancel, canceling }) {
     >
       {canceling ? "Cancelling..." : "Cancel order"}
     </button>
+
   </div>
 )}
     </article>

@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom"
 import { fetchProducts } from "../api/products"
 import SideBar from "../components/SideBar"
 import ProductGrid from "../components/ProductGrid"
-
+import Footer from "../components/Footer"
 const defaultFilters = { type: "all", cc: "all", brand: "all", price: 100, fuel: "all", use: "all" }
 
 const sortOptions = [
@@ -116,6 +116,7 @@ export default function Showroom() {
 
         <ProductGrid products={sorted} />
       </main>
+      <Footer/>
     </div>
   )
 }

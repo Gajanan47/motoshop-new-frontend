@@ -293,7 +293,7 @@ const ProductDetails = () => {
 
               <button
                 onClick={handleBuyNow}
-                className="h-14 border-2 border-[#004ac6] text-[#004ac6] rounded-xl font-bold hover:bg-[#004ac6]/5 transition flex items-center justify-center gap-2"
+                className="h-14 border-2  border-[#004ac6] text-[#004ac6] rounded-xl font-bold hover:bg-[#004ac6]/5 transition flex items-center justify-center gap-2"
               >
                 Buy Now
               </button>

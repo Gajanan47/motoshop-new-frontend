@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import API from "../api/axios"
 import { useNavigate, Link } from "react-router-dom"
+// import Navbar from "../components/Navbar"
 
 const Register = () => {
   const [name, setName] = useState("")
@@ -46,9 +47,13 @@ const Register = () => {
     }
   }
 
-  return (
+  return (<>
+    
+    
     <main className="min-h-[calc(100vh-3.5rem)] bg-slate-100 flex items-center justify-center px-5 py-10">
+      
       <section className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
+        
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
             MOTO<span className="blue-500">SHOP</span>
@@ -142,6 +147,7 @@ const Register = () => {
         </form>
       </section>
     </main>
+    </>
   )
 }
 
