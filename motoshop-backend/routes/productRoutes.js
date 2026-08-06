@@ -6,6 +6,7 @@ const {
   addProduct,
   updateProduct,
   deleteProduct,
+  toggleTrending,
   getSimilarProducts,
   generateDescription
 } = require("../controllers/productController")
@@ -22,7 +23,7 @@ router.get("/:id", getProductById)
 router.post("/", verifyAdmin, upload.array("images", 5), addProduct)
 router.post("/generate-description", verifyAdmin, generateDescription)
 router.put("/:id", verifyAdmin, upload.array("images", 5), updateProduct)
+router.patch("/:id/trending", verifyAdmin, toggleTrending)
 router.delete("/:id", verifyAdmin, deleteProduct)
-
 
 module.exports = router

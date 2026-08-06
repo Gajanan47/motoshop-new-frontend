@@ -133,7 +133,7 @@ export default function Sidebar({ filters, setFilters, resultCount }) {
   return (
     <div
       ref={containerRef}
-      className="sticky top-20 z-40 flex flex-nowrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none border-b border-slate-200/70 bg-[#f2f4f6]/85 px-4 py-3 sm:px-8 sm:py-4 lg:px-16 backdrop-blur-md"
+      className="sticky top-20 z-40 flex flex-nowrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none border-b border-slate-200/70 bg-[#f2f4f6]/85 px-4 py-3 sm:px-8 sm:py-4 lg:px-16 backdrop-blur-md "
     >
       <span className="flex items-center gap-1.5 text-blue-600 font-semibold uppercase text-xs tracking-widest shrink-0">
         ⚙ Filter System

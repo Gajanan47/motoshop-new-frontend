@@ -139,9 +139,19 @@ export default function Home() {
     {error}
   </div>
 
-  const feature = filtered[2] || products[2]
-  const sideProducts = (filtered.length ? filtered : products).slice(1, 4)
-  const catalogue = filtered.length ? filtered : products
+  // Trending Now — admin-curated via the is_trending flag, newest-marked first.
+  // (Falls back to nothing rendered at all if the admin hasn't marked any products yet —
+  // see the `{feature && ...}` guard below — rather than showing arbitrary products.)
+  const trending = [...products]
+    .filter((p) => p.is_trending)
+    .sort((a, b) => b.id - a.id)
+    .slice(0, 4)
+  const feature = trending[0]
+  const sideProducts = trending.slice(1, 4)
+
+  // Sorted newest-first so "Latest Launches" is reliably ordered by recency,
+  // not whatever order the API happens to return.
+  const catalogue = [...(filtered.length ? filtered : products)].sort((a, b) => b.id - a.id)
 
   return (
     <div className="min-h-screen bg-[#f7f9fb] text-[#191c1e]">
@@ -179,7 +189,7 @@ export default function Home() {
             <article onClick={() => navigate(`/products/${feature.id}`)}
               className="group relative min-h-[480px] cursor-pointer overflow-hidden rounded-3xl bg-slate-900 lg:col-span-6">
               <img src={feature.image} alt={feature.name}
-                className="absolute inset-0 h-full w-full object-cover p-6 opacity-90 transition duration-700 group-hover:scale-105" />
+                className="absolute inset-0 h-full w-full object-contain p-6 opacity-90 transition duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-7 text-white sm:p-10">
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-800">
@@ -190,7 +200,7 @@ export default function Home() {
                   {feature.name}
                 </h2>
                 <p className="mt-2 max-w-xl text-white/75">
-                  {feature.description || "Discover premium performance, crafted for the road ahead."}
+                  { "Discover premium performance, crafted for the road ahead."}
                 </p>
                 <div className="mt-6 flex gap-10 text-sm">
                   <div>

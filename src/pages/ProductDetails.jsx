@@ -7,6 +7,7 @@ import { useCompare } from '../context/CompareContext'
 import SimilarProducts from '../components/SimilarProducts'
 import ReviewSection from '../components/ReviewSection'
 import { getSpecFields } from "../utils/vehicleSpecs"
+import WelcomeIntro from "./WelcomeIntro"
 import { FaHeart, FaRegHeart, FaStar, FaRegStar, FaShoppingBag } from 'react-icons/fa'
 import {
   MdCompareArrows,
@@ -318,33 +319,36 @@ const ProductDetails = () => {
                   <p className="text-xs text-[#434655]">Inspected by MotoShop</p>
                 </div>
               </div>
-              
-
-            </div>
-                          
+            </div>      
           </div>
         </section>
-
-        {/* Highlights */}
-        {highlights.length > 0 && (
+          <div className="flex flex-row sm:flex-row gap-2 border-b">
+            {highlights.length > 0 && (
           <section className="mb-20">
             <h2 className="text-3xl font-bold text-[#191c1e] mb-8">Vehicle Highlights</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 w-96">
               {highlights.map((h, i) => (
                 <div
                   key={i}
-                  className="bg-[#eceef0] p-6 rounded-3xl border border-[#e0e3e5] hover:border-[#004ac6] transition group"
+                  className="bg-[#eceef0] p-4 rounded-3xl border border-[#e0e3e5] hover:border-[#004ac6] transition group"
                 >
                   <span className="text-[#004ac6] text-3xl mb-4 inline-block group-hover:scale-110 transition-transform">
                     {h.icon}
                   </span>
                   <p className="text-[#434655] text-sm mb-1">{h.label}</p>
-                  <p className="text-xl font-semibold text-[#191c1e]">{h.value}</p>
+                  <p className="text-lg hover:text-primary font-semibold text-[#191c1e]">{h.value}</p>
                 </div>
               ))}
             </div>
           </section>
         )}
+        <div className="flex-auto border rounded-md max-h-full mb-3">
+       <img src={selectedImage} className='' />
+
+        </div>
+            </div>    
+        {/* Highlights */}
+        
         {(() => {
           const filledSpecs = getSpecFields(product.type).filter(
             (f) => product.specs?.[f.key] !== undefined && product.specs?.[f.key] !== null && product.specs?.[f.key] !== ""
@@ -353,13 +357,15 @@ const ProductDetails = () => {
           return (
             <section className="mb-20">
               <h2 className="text-3xl font-bold text-[#191c1e] mb-8">Detailed Specifications</h2>
-              <div className="grid sm:grid-cols-2 gap-x-12 gap-y-4 bg-[#eceef0] rounded-3xl border border-[#e0e3e5] p-6 sm:p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5  bg-[#eceef0] rounded-3xl border border-[#e0e3e5] max-w-xl p-6 sm:p-8">
                 {filledSpecs.map((f) => (
-                  <div key={f.key} className="flex items-center justify-between border-b border-[#e0e3e5] pb-3">
-                    <span className="text-[#434655] text-sm">{f.label}</span>
+                  <div key={f.key} className="grid grid-cols-[160px_1fr] items-center border-b  border-[#e0e3e5] pb-3">
+                    
+                      <span className="text-[#434655] text-sm">{f.label}</span>
                     <span className="font-semibold text-[#191c1e]">
                       {product.specs[f.key]}{f.unit ? ` ${f.unit}` : ""}
                     </span>
+                    
                   </div>
                 ))}
               </div>
@@ -376,10 +382,10 @@ const ProductDetails = () => {
       </div>
 
       <div className="max-w-[1280px] mx-auto px-6 md:px-8">
-        <SimilarProducts products={similarProducts} />
         <ReviewSection productId={id} />
+        <SimilarProducts products={similarProducts} />
       </div>
-    </div>
+    </div> 
   )
 }
 

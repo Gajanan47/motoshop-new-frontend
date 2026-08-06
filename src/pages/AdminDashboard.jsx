@@ -5,6 +5,7 @@ import {
   addProduct,
   updateProduct,
   deleteProduct,
+  toggleTrending,
   generateProductDescription
 } from "../api/products"
 import { fetchOrders, updateOrderStatus } from "../api/orders"
@@ -17,6 +18,7 @@ const emptyForm = {
   price: "", rating: 0, reviews: 0, badge: "",
   description: "",
   specs: {},
+  is_trending: false,
   images: [""],
 }
 
@@ -177,6 +179,7 @@ export default function AdminDashboard() {
       badge: product.badge,
       description: product.description || "",
       specs: product.specs || {},
+      is_trending: !!product.is_trending,
       images: product.images?.length
         ? product.images.filter(Boolean)
         : [""]
@@ -203,6 +206,7 @@ export default function AdminDashboard() {
         reviews: form.reviews,
         badge: form.badge,
         description: form.description,
+        is_trending: form.is_trending ? 1 : 0,
       }).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           data.append(key, value)
@@ -229,6 +233,20 @@ export default function AdminDashboard() {
       setMessage(err.response?.data?.message || "Something went wrong")
     } finally {
       setFormLoading(false)
+      setTimeout(() => setMessage(""), 3000)
+    }
+  }
+
+  async function handleToggleTrending(product) {
+    const next = !product.is_trending
+    // optimistic update so the star flips instantly
+    setProducts((prev) => prev.map((p) => p.id === product.id ? { ...p, is_trending: next ? 1 : 0 } : p))
+    try {
+      await toggleTrending(product.id, next)
+    } catch (err) {
+      // revert on failure
+      setProducts((prev) => prev.map((p) => p.id === product.id ? { ...p, is_trending: product.is_trending } : p))
+      setMessage("Failed to update trending status")
       setTimeout(() => setMessage(""), 3000)
     }
   }
@@ -614,6 +632,7 @@ export default function AdminDashboard() {
                         <th className="px-4 py-3">Fuel</th>
                         <th className="px-4 py-3">Value</th>
                         <th className="px-4 py-3">Badge</th>
+                        <th className="px-4 py-3 text-center">Trending</th>
                         <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
                     </thead>
@@ -629,6 +648,15 @@ export default function AdminDashboard() {
                           <td className="px-4 py-3 font-bold text-blue-500">₹{p.price}L</td>
                           <td className="px-4 py-3">
                             {p.badge ? <span className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded font-semibold uppercase">{p.badge}</span> : <span className="text-slate-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <button
+                              onClick={() => handleToggleTrending(p)}
+                              title={p.is_trending ? "Remove from trending" : "Mark as trending"}
+                              className={`text-lg hover:scale-125 transition cursor-pointer ${p.is_trending ? "text-orange-500" : "text-slate-300"}`}
+                            >
+                              {p.is_trending ? "★" : "☆"}
+                            </button>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex gap-1.5 justify-end">
@@ -878,6 +906,18 @@ export default function AdminDashboard() {
                   </select>
                 </div>
               </div>
+
+              <label className="flex items-center gap-2 cursor-pointer w-fit">
+                <input
+                  type="checkbox"
+                  checked={!!form.is_trending}
+                  onChange={(e) => setForm((prev) => ({ ...prev, is_trending: e.target.checked }))}
+                  className="w-4 h-4 accent-orange-500 cursor-pointer"
+                />
+                <span className="text-sm text-slate-700">
+                  ⭐ Mark as trending — shown in the homepage's "Trending Now" section
+                </span>
+              </label>
 
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Rating (0-5)" name="rating" min="0" max="5" step="0.1" value={form.rating} onChange={handleRatingChange} placeholder="e.g. 4.5" type="number" />

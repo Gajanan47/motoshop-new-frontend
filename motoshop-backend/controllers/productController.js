@@ -171,7 +171,7 @@ function parseSpecs(specs) {
 const addProduct = async (req, res) => {
   try {
     const { name, company, type, cc, fuel, use_case,
-            price, rating, reviews, badge, description, specs } = req.body
+            price, rating, reviews, badge, description, specs, is_trending } = req.body
     const images = buildImages(req)
     // images = array of URLs from frontend e.g. ["url1", "url2"]
 
@@ -183,10 +183,10 @@ const addProduct = async (req, res) => {
     const image = images?.[0] || null
     const [result] = await db.query(
       `INSERT INTO products
-        (name, company, type, cc, fuel, use_case, price, rating, reviews, badge, description, image, specs)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (name, company, type, cc, fuel, use_case, price, rating, reviews, badge, description, image, specs, is_trending)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [name, company, type, cc || 0, fuel, use_case,
-       price, rating || 0, reviews || 0, badge || "", description || "", image, parsePrecs()]
+       price, rating || 0, reviews || 0, badge || "", description || "", image, parsePrecs(), is_trending ? 1 :0]
     )
 
     const productId = result.insertId
@@ -214,7 +214,7 @@ const updateProduct = async (req, res) => {
   try {
     const { id } = req.params
     const { name, company, type, cc, fuel,
-            use_case, price, rating, reviews, badge, description, specs } = req.body
+            use_case, price, rating, reviews, badge, description, specs, is_trending } = req.body
 
     const [existing] = await db.query("SELECT * FROM products WHERE id = ?", [id])
     if (existing.length === 0)
@@ -225,11 +225,12 @@ const updateProduct = async (req, res) => {
     await db.query(
       `UPDATE products SET
         name=?, company=?, type=?, cc=?, fuel=?,
-        use_case=?, price=?, rating=?, reviews=?, badge=?, description=?, image=?, specs=?
+        use_case=?, price=?, rating=?, reviews=?, badge=?, description=?, image=?, specs=?, is_trending=?
        WHERE id=?`,
       [name, company, type, cc, fuel, use_case, price, rating, reviews, badge,
        description ?? existing[0].description, images?.[0] || existing[0].image,
-        specs !== undefined ? parseSpecs(specs) : (existing[0].specs ?  JSON.stringify(existing[0].specs) : "{}"),
+        specs !== undefined ? parseSpecs(specs) : (existing[0].specs ?  JSON.stringify(existing[0].specs) : "{}"), 
+        is_trending !== undefined ? (is_trending ? 1 : 0) : existing[0].is_trending, 
          id]
     )
 
@@ -246,6 +247,25 @@ const updateProduct = async (req, res) => {
     res.json({ success: true, message: "Product updated successfully" })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
+  }
+}
+
+const toggleTrending = async(req, res) =>{
+  try{
+    const {id} = req.params
+    const {is_trending} = req.body
+
+    const [existing] = await db.query("SELECT id FROM products WHERE id = ? ",[id])
+
+    if(existing.length === 0){
+      return res.status(404).json({success:false, message: "Product not found"})
+    }
+
+    await db.query(`UPDATE products SET is_trending = ? WHERE id=?`,[is_trending ? 1 : 0, id])
+
+    res.json({success:true, message: "Product's trending status updated successfully"})
+  }catch(err){
+    res.status(500).json({success:false, message:err.message})
   }
 }
 
@@ -304,5 +324,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getSimilarProducts,
-  generateDescription
+  generateDescription,
+  toggleTrending
 }
