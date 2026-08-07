@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { MdCalendarMonth, MdCheckCircle, MdPhone, MdSchedule } from "react-icons/md"
 import { bookTestDrive } from "../api/testDrives"
 import {fetchMe} from "../api/users"
@@ -56,6 +56,22 @@ export default function TestDriveBooking({ product }) {
       </aside>
     )
   }
+  useEffect(() => {
+      async function loadAccountDetails() {
+        try {
+          const res = await fetchMe()
+          const user = res.data.data
+          setForm((prev) => ({
+            ...prev,
+            name: user.name || prev.name,
+            phone: user.phone || prev.phone,
+          }))
+        } catch (err) {
+          console.log("Could not load account details:", err.message)
+        }
+      }
+      loadAccountDetails()
+    }, [])
 
   return (
     <aside className="rounded-3xl border border-[#e0e3e5] bg-white p-6 shadow-sm sm:p-8">
