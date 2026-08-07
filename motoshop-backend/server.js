@@ -13,7 +13,7 @@ const app = express()
 app.use(cors({
     
     origin:
-    ["http://localhost:5173", "http://127.0.0.1:5173", "http://192.168.1.43:5173"],
+    ["http://localhost:5173", "https://motoshop-backend-duct.onrender.com/"],
     credentials: true
 }))
 app.use(express.json())
