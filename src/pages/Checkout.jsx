@@ -11,9 +11,8 @@ export default function Checkout() {
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const name = localStorage.getItem("userName")
-  const phone = localStorage.getItem("userPhone")
   const [form, setForm] = useState({
-    name: name? name: "", email: "", phone: phone ? phone : "",
+    name: name || "", email: "", phone: "",
     addressLine: "", city: "", state: "", pincode: ""
   })
   const [paid, setPaid] = useState(false)
@@ -23,6 +22,24 @@ export default function Checkout() {
   const checkoutCartTotal = checkoutCart.reduce((sum, item) => sum + item.price * item.qty, 0)
   const gst = checkoutCartTotal * 0.18
   const total = checkoutCartTotal + gst
+
+  useEffect(() => {
+    async function loadAccountDetails() {
+      try {
+        const res = await fetchMe()
+        const user = res.data.data
+        setForm((prev) => ({
+          ...prev,
+          name: user.name || prev.name,
+          email: user.email || prev.email,
+          phone: user.phone || prev.phone,
+        }))
+      } catch (err) {
+        console.log("Could not load account details:", err.message)
+      }
+    }
+    loadAccountDetails()
+  }, [])
 
   // ── Saved addresses ──
   const [savedAddresses, setSavedAddresses] = useState([])
