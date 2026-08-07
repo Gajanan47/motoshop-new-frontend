@@ -3,14 +3,17 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { useCart } from "../context/CartContext"
 import { placeOrder } from "../api/orders"
 import { fetchMyAddresses, addAddress } from "../api/addresses"
+import {fetchMe} from "../api/users"
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart, removeFromCart } = useCart()
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
+  const name = localStorage.getItem("userName")
+  const phone = localStorage.getItem("userPhone")
   const [form, setForm] = useState({
-    name: "", email: "", phone: "",
+    name: name? name: "", email: "", phone: phone ? phone : "",
     addressLine: "", city: "", state: "", pincode: ""
   })
   const [paid, setPaid] = useState(false)

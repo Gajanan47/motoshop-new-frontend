@@ -34,6 +34,7 @@ const LoginForm = () => {
       localStorage.setItem("userToken", token)
       localStorage.setItem("userName", user.name)
       localStorage.setItem("userEmail", user.email)
+      window.dispatchEvent(new Event("user-profile-updated"))
       navigate("/")
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please check entered data and try again.")

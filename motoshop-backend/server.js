@@ -36,6 +36,7 @@ app.use("/api/chatbot", require("./routes/chatbotRoutes"))
 app.use("/api/reviews", reviewRoutes)
 app.use("/api/wishlist",wishlistRoutes);
 app.use("/api/notifications", notificationRoutes)
+app.use("/api/test-drives", require("./routes/testDriveRoutes"))
 app.get('/', (req, res) => {
     res.json({ message: "MotoShop backend is running" })
 })

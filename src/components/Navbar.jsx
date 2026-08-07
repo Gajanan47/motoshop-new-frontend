@@ -17,19 +17,26 @@ export default function Navbar() {
   const location = useLocation()
   const [searchParams] = useSearchParams()
 
-  const name = localStorage.getItem("userName")
+  const [name, setName] = useState(() => localStorage.getItem("userName"))
   const isLoginPage = location.pathname === '/login'
   const isHomePage = location.pathname === '/'
   const isRegisterPage = location.pathname === '/register'
 
   // sync search input with URL param when on home page
   useEffect(() => {
+    setName(localStorage.getItem("userName"))
     if (isHomePage) {
       setSearchInput(searchParams.get("search") || "")
     } else {
       setSearchInput("")
     }
-  }, [location])
+  }, [location, isHomePage, searchParams])
+
+  useEffect(() => {
+    const syncUserName = () => setName(localStorage.getItem("userName"))
+    window.addEventListener("user-profile-updated", syncUserName)
+    return () => window.removeEventListener("user-profile-updated", syncUserName)
+  }, [])
 
   useEffect(() => {
   async function loadProducts() {

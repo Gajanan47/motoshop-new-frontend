@@ -25,3 +25,11 @@ const FOUR_WHEELER_SPECS = [
 export function getSpecFields(type) {
   return String(type) === "4" ? FOUR_WHEELER_SPECS : TWO_WHEELER_SPECS
 }
+
+// Ownership info — same fields regardless of 2-wheeler vs 4-wheeler,
+// so unlike getSpecFields() this isn't type-dependent.
+export const OWNERSHIP_FIELDS = [
+  { key: "serviceInterval", label: "Service Interval", type: "text", placeholder: "e.g. Every 5,000 km" },
+  { key: "warranty", label: "Standard Warranty", type: "text", placeholder: "e.g. 5 Years / 70,000 km" },
+  { key: "rsa", label: "RSA", type: "text", placeholder: "e.g. 24/7 Available" },
+]

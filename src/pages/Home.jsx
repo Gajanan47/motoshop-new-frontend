@@ -9,6 +9,7 @@ import Hero from "../components/Hero"
 import SideBar from "../components/SideBar"
 import { MdCompareArrows } from "react-icons/md"
 import Footer from "../components/Footer"
+import ProductCardSkeleton from "../components/ProductCardSkeleton"
 
 const defaultFilters = { type: "all", cc: "all", brand: "all", price: 100, fuel: "all", use: "all" }
 
@@ -132,9 +133,13 @@ export default function Home() {
     return true
   }), [filters, products, searchQuery])
 
-  if (loading) return <div className="grid min-h-[70vh] place-items-center bg-[#f7f9fb] text-slate-500">
-    Loading your showroom…
-  </div>
+  if (loading) return (
+    <div className="mx-auto max-w-[1720px] px-5 pt-10 pb-24 sm:px-8 lg:px-16">
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+      </div>
+    </div>
+  )
   if (error) return <div className="grid min-h-[70vh] place-items-center bg-[#f7f9fb] text-red-600">
     {error}
   </div>
@@ -161,7 +166,7 @@ export default function Home() {
   onMouseOut={(e) => e.currentTarget.start()}>
         
       </marquee>
-      <SideBar filters={filters} setFilters={setFilters} resultCount={filtered.length} />
+      {/* <SideBar filters={filters} setFilters={setFilters} resultCount={filtered.length} /> */}
       <main id="inventory" className="mx-auto max-w-[1440px] px-5 pb-24 pt-10 sm:px-8 lg:px-16">
         {searchQuery && <p className="mb-6 text-sm text-slate-500">
           Showing

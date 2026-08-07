@@ -6,8 +6,9 @@ import { useWishlist } from '../context/WishlistContext'
 import { useCompare } from '../context/CompareContext'
 import SimilarProducts from '../components/SimilarProducts'
 import ReviewSection from '../components/ReviewSection'
-import { getSpecFields } from "../utils/vehicleSpecs"
-import WelcomeIntro from "./WelcomeIntro"
+import TestDriveBooking from '../components/TestDriveBooking'
+import { getSpecFields, OWNERSHIP_FIELDS } from "../utils/vehicleSpecs"
+import EmiEstimate from "../components/EmiEstimate"
 import { FaHeart, FaRegHeart, FaStar, FaRegStar, FaShoppingBag } from 'react-icons/fa'
 import {
   MdCompareArrows,
@@ -18,10 +19,23 @@ import {
   MdArrowForward,
   MdBolt,
   MdLocalGasStation,
-  MdSportsMotorsports
+  MdSportsMotorsports,
+  MdCalendarToday,
+  MdSupportAgent
 } from 'react-icons/md'
 // import { GiMotorcycle } from 'react-icons/gi'
 import CompareTray from "../components/CompareTray"
+// import ProductDetailsSkeleton from "../components/ProductDetailsSkeleton"
+
+function getProductImages(product) {
+  const images = Array.isArray(product?.images) ? product.images : []
+  return images.filter(Boolean).length > 0
+    ? images.filter(Boolean)
+    : product?.image
+      ? [product.image]
+      : []
+}
+
 const ProductDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -42,24 +56,39 @@ const ProductDetails = () => {
   const isComparing = product ? isInCompare(product.id) : false
 
   useEffect(() => {
+    let isCurrent = true
+
     async function load() {
       try {
         setLoading(true)
         const res = await fetchProducts()
-        const found = res.data.data.find((p) => p.id === Number(id))
-        setProduct(found)
-        setSelectedImage(found?.image)
+        const found = res.data.data.find((p) => String(p.id) === String(id))
+        if (!isCurrent) return
 
-        const similar = await getSimilarProducts(id)
-        setSimilarProducts(similar.data.data)
+        setProduct(found)
+        setSelectedImage(getProductImages(found)[0] || '')
+
+        try {
+          const similar = await getSimilarProducts(id)
+          if (isCurrent) setSimilarProducts(similar.data.data || [])
+        } catch (err) {
+          // The product should remain usable if recommendations are unavailable.
+          if (isCurrent) setSimilarProducts([])
+          console.log('Error loading similar products:', err.message)
+        }
       } catch (err) {
+        if (isCurrent) setProduct(undefined)
         console.log('Error loading product:', err.message)
       } finally {
-        setLoading(false)
+        if (isCurrent) setLoading(false)
       }
     }
     load()
     window.scrollTo(0, 0)
+
+    return () => {
+      isCurrent = false
+    }
   }, [id])
 
   const handleWishlist = () => {
@@ -77,7 +106,7 @@ const ProductDetails = () => {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center bg-[#f7f9fb]">
-        <p className="text-[#434655] font-medium">Loading vehicle details…</p>
+        <p className="text-[#434655] font-medium">Loading product…</p>
       </div>
     )
   }
@@ -90,11 +119,7 @@ const ProductDetails = () => {
     )
   }
 
-  const images = Array.isArray(product.images)
-    ? product.images
-    : product.image
-      ? [product.image]
-      : []
+  const images = getProductImages(product)
 
   // Highlight tiles — only rendered when the product actually has the data.
   const highlights = [
@@ -263,6 +288,8 @@ const ProductDetails = () => {
 
             {/* Sticky action card */}
             <div className="lg:sticky lg:top-24 bg-white p-6 rounded-3xl shadow-lg border border-[#e0e3e5] flex flex-col gap-4">
+              <EmiEstimate price={product.price} />
+
               {qty === 0 ? (
                 <button
                   onClick={() => addToCart(product)}
@@ -322,44 +349,74 @@ const ProductDetails = () => {
             </div>      
           </div>
         </section>
-          <div className="flex flex-row sm:flex-row gap-2 border-b">
-            {highlights.length > 0 && (
+
+        
+        {highlights.length > 0 && (
           <section className="mb-20">
             <h2 className="text-3xl font-bold text-[#191c1e] mb-8">Vehicle Highlights</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 w-96">
-              {highlights.map((h, i) => (
-                <div
-                  key={i}
-                  className="bg-[#eceef0] p-4 rounded-3xl border border-[#e0e3e5] hover:border-[#004ac6] transition group"
-                >
-                  <span className="text-[#004ac6] text-3xl mb-4 inline-block group-hover:scale-110 transition-transform">
-                    {h.icon}
-                  </span>
-                  <p className="text-[#434655] text-sm mb-1">{h.label}</p>
-                  <p className="text-lg hover:text-primary font-semibold text-[#191c1e]">{h.value}</p>
-                </div>
-              ))}
+            <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {highlights.map((h, i) => (
+                  <div
+                    key={i}
+                    className="bg-[#eceef0] p-4 rounded-3xl border border-[#e0e3e5] hover:border-[#004ac6] transition group"
+                  >
+                    <span className="text-[#004ac6] text-3xl mb-4 inline-block group-hover:scale-110 transition-transform">
+                      {h.icon}
+                    </span>
+                    <p className="text-[#434655] text-sm mb-1">{h.label}</p>
+                    <p className="text-lg hover:text-primary font-semibold text-[#191c1e]">{h.value}</p>
+                  </div>
+                ))}
+              </div>
+              {/* <div className="bg-[#eceef0] rounded-3xl border border-[#e0e3e5] p-6 flex flex-col justify-between"> */}
+                  {/* <div>
+                    <MdCompareArrows className="text-[#004ac6] text-3xl mb-3" />
+                    <p className="font-semibold text-[#191c1e] mb-1">See how it compares</p>
+                    <p className="text-sm text-[#434655] leading-relaxed">
+                      Add this vehicle to your comparison list and line it up against similar bikes across other brands.
+                    </p>
+                  </div>
+                  <div className="mt-4 flex flex-col gap-2">
+                    <button
+                      onClick={() => toggleCompare(product)}
+                      className={`h-11 rounded-xl font-semibold text-sm transition ${
+                        isComparing
+                          ? 'bg-white border border-[#004ac6] text-[#004ac6]'
+                          : 'bg-[#004ac6] text-white hover:bg-[#2563eb]'
+                      }`}
+                    >
+                      {isComparing ? 'Added to Compare ✓' : 'Add to Compare'}
+                    </button>
+                    {isComparing && (
+                      <button
+                        onClick={() => navigate('/compare')}
+                        className="h-11 rounded-xl font-semibold text-sm text-[#004ac6] flex items-center justify-center gap-1.5 hover:bg-white/60 transition"
+                      >
+                        View comparison <MdArrowForward className="text-base" />
+                      </button>
+                    )}
+                  </div> */}
+                {/* </div> */}
             </div>
           </section>
         )}
-        <div className="flex-auto border rounded-md max-h-full mb-3">
-       <img src={selectedImage} className='' />
-
-        </div>
-            </div>    
-        {/* Highlights */}
-        
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-10">
+        {/* Detailed Specifications */}
         {(() => {
+          // Editorial verdict content is rendered separately below; it must not
+          // become a row in the compact specifications table.
+          const editorialSpecKeys = new Set(["expertVerdictTitle", "expertVerdictText"])
           const filledSpecs = getSpecFields(product.type).filter(
-            (f) => product.specs?.[f.key] !== undefined && product.specs?.[f.key] !== null && product.specs?.[f.key] !== ""
+            (f) => !editorialSpecKeys.has(f.key) && product.specs?.[f.key] !== undefined && product.specs?.[f.key] !== null && product.specs?.[f.key] !== ""
           )
           if (filledSpecs.length === 0) return null
           return (
-            <section className="mb-20">
+            <section className="min-w-0">
               <h2 className="text-3xl font-bold text-[#191c1e] mb-8">Detailed Specifications</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5  bg-[#eceef0] rounded-3xl border border-[#e0e3e5] max-w-xl p-6 sm:p-8">
+              <div className="grid w-full grid-cols-1 gap-x-10 gap-y-5 rounded-3xl border border-[#e0e3e5] bg-[#eceef0] p-5 sm:p-8">
                 {filledSpecs.map((f) => (
-                  <div key={f.key} className="grid grid-cols-[160px_1fr] items-center border-b  border-[#e0e3e5] pb-3">
+                  <div key={f.key} className="grid grid-cols-1 gap-1 border-b border-[#e0e3e5] pb-3 sm:grid-cols-[minmax(130px,160px)_minmax(0,1fr)] sm:items-center sm:gap-3">
                     
                       <span className="text-[#434655] text-sm">{f.label}</span>
                     <span className="font-semibold text-[#191c1e]">
@@ -372,13 +429,59 @@ const ProductDetails = () => {
             </section>
           )
         })()}
+        <section className="min-w-0">
+          <TestDriveBooking product={product} />
+        </section>
+
+</div>
+        
+        
         {/* Description */}
-        {product.description && (
-          <section className="mb-20 max-w-3xl">
-            <h2 className="text-3xl font-bold text-[#191c1e] mb-6">About this vehicle</h2>
-            <p className="text-lg text-[#434655] leading-relaxed">{product.description}</p>
-          </section>
-        )}
+        {product.description && (() => {
+          const ownershipIcons = { serviceInterval: <MdCalendarToday />, warranty: <MdVerifiedUser />, rsa: <MdSupportAgent /> }
+          const filledOwnership = OWNERSHIP_FIELDS.filter(
+            (f) => product.specs?.[f.key] !== undefined && product.specs?.[f.key] !== null && product.specs?.[f.key] !== ""
+          )
+          const hasOwnership = filledOwnership.length === OWNERSHIP_FIELDS.length
+          const hasVerdict = product.specs?.expertVerdictTitle && product.specs?.expertVerdictText
+
+          return (
+            <section className="mb-20">
+              <div className={`grid gap-10 ${hasOwnership ? 'lg:grid-cols-2' : ''}`}>
+                <div className={hasOwnership ? '' : 'max-w-3xl'}>
+                  <h2 className="text-3xl font-bold text-[#191c1e] mb-6">About this vehicle</h2>
+                  <p className="text-lg text-[#434655] leading-relaxed">{product.description}</p>
+                </div>
+
+                {hasOwnership && (
+                  <div>
+                    <h2 className="text-3xl font-bold text-[#191c1e] mb-6">Practical Ownership</h2>
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      {filledOwnership.map((f) => (
+                        <div key={f.key} className="bg-[#eceef0] rounded-2xl border border-[#e0e3e5] p-4">
+                          <div className="flex items-center gap-1.5 text-[#004ac6] text-xs font-semibold mb-2">
+                            {ownershipIcons[f.key]}
+                            <span>{f.label}</span>
+                          </div>
+                          <p className="font-semibold text-[#191c1e] text-sm">{product.specs[f.key]}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {hasVerdict && (
+                      <div className="bg-[#004ac6]/5 border border-[#004ac6]/20 rounded-2xl p-5">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-[#004ac6] mb-2">Expert Verdict</p>
+                        <p className="font-bold text-[#191c1e] mb-2">{product.specs.expertVerdictTitle}</p>
+                        <p className="text-sm text-[#434655] leading-relaxed">{product.specs.expertVerdictText}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </section>
+          )
+        })()}
+        
       </div>
 
       <div className="max-w-[1280px] mx-auto px-6 md:px-8">

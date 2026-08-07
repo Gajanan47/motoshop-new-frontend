@@ -4,6 +4,7 @@ import { fetchProducts } from "../api/products"
 import SideBar from "../components/SideBar"
 import ProductGrid from "../components/ProductGrid"
 import Footer from "../components/Footer"
+import ProductCardSkeleton from "../components/ProductCardSkeleton"
 const defaultFilters = { type: "all", cc: "all", brand: "all", price: 100, fuel: "all", use: "all" }
 
 const sortOptions = [
@@ -75,9 +76,13 @@ export default function Showroom() {
     })
   }
 
-  if (loading) return <div className="grid min-h-[70vh] place-items-center bg-[#f7f9fb] text-slate-500">
-    Loading the showroom…
-  </div>
+  if (loading) return (
+    <div className="mx-auto max-w-[1720px] px-5 pt-10 pb-24 sm:px-8 lg:px-16">
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6">
+        {Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+      </div>
+    </div>
+  )
   if (error) return <div className="grid min-h-[70vh] place-items-center bg-[#f7f9fb] text-red-600">
     {error}
   </div>

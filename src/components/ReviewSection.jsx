@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getReviews, addReviews, deleteReview } from '../api/review'
 import { useNavigate } from 'react-router-dom'
+import Skeleton from './Skeleton'
 
 // ── Star rating widget — works for both interactive and read-only display ──
 const StarRating = ({ value, onChange, readOnly = false }) => {
@@ -256,9 +257,25 @@ export default function ReviewSection({ productId }) {
         {/* ── Right column: all reviews list ── */}
         <div className="lg:col-span-2">
           {loading ? (
-            <div className="text-center py-16 text-slate-400">
-              <div className="text-3xl mb-2 animate-pulse">⭐</div>
-              <p className="text-sm">Loading reviews...</p>
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                  <div className="flex items-start gap-3">
+                    <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="space-y-1.5">
+                          <Skeleton className="h-3.5 w-28" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                      <Skeleton className="h-3.5 w-full mt-3" />
+                      <Skeleton className="h-3.5 w-2/3" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : reviews.length === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 text-center">
@@ -319,4 +336,3 @@ export default function ReviewSection({ productId }) {
     </div>
   )
 }
-

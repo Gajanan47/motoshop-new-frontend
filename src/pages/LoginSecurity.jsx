@@ -63,6 +63,8 @@ const LoginSecurity = () => {
     try {
       await updateProfile({ name: nameInput, phone: user.phone })
       setUser(prev => ({ ...prev, name: nameInput }))
+      localStorage.setItem("userName", nameInput)
+      window.dispatchEvent(new Event("user-profile-updated"))
       closeEdit()
       setNameUpdateSuccess(true)
     } catch (err) {

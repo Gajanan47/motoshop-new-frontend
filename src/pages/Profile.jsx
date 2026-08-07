@@ -7,7 +7,6 @@ const Profile = () => {
   const navigate = useNavigate()
   const [user, setUser] = useState("")
   const [loading, setLoading] = useState(true)
-  const name = localStorage.getItem('userName')
   useEffect(() => {
     async function loader() {
       try {
@@ -55,7 +54,7 @@ const Profile = () => {
     {
       title: "Your Address",
       desc: "Edit your address or add addresses",
-      icon: <MapPinned/>,
+      icon: <MapPinned className='text-orange-300'/>,
       onClick: () => navigate('/account/addresses'),
     },
     {
@@ -88,7 +87,7 @@ const Profile = () => {
 
           <div>
             <h1 className="text-4xl font-bold text-gray-900">
-              Welcome back, {name}
+              Welcome back, {user?.name || localStorage.getItem('userName')}
             </h1>
 
             <p className="text-gray-500 mt-3">

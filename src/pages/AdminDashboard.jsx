@@ -10,7 +10,7 @@ import {
 } from "../api/products"
 import { fetchOrders, updateOrderStatus } from "../api/orders"
 import NotificationBell from "../components/NotificationBell"
-import { getSpecFields } from "../utils/vehicleSpecs"
+import { getSpecFields, OWNERSHIP_FIELDS } from "../utils/vehicleSpecs"
 import MotoShop_logo from "../assets/MotoShop_logo.png"
 const emptyForm = {
   name: "", company: "", type: 2, cc: 0,
@@ -947,6 +947,50 @@ export default function AdminDashboard() {
                   </p>
                 </div>
                 <Field label="Reviews" name="reviews" value={form.reviews} onChange={handleChange} placeholder="e.g. 650" type="number" />
+              </div>
+
+              {/* Practical Ownership — shown as its own callout section next to the description */}
+              <div>
+                <label className="text-xs text-slate-500 font-medium block mb-2">
+                  Practical Ownership
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {OWNERSHIP_FIELDS.map((f) => (
+                    <div key={f.key}>
+                      <label className="text-[11px] text-slate-400 block mb-1">{f.label}</label>
+                      <input
+                        type={f.type}
+                        value={form.specs?.[f.key] ?? ""}
+                        onChange={(e) => handleSpecChange(f.key, e.target.value)}
+                        placeholder={f.placeholder}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Optional — all three fields need to be filled in for the ownership card to appear on the product page.
+                </p>
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-500 font-medium block mb-2">
+                  Expert Verdict <span className="text-slate-400 font-normal">(optional editorial blurb)</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.specs?.expertVerdictTitle ?? ""}
+                  onChange={(e) => handleSpecChange("expertVerdictTitle", e.target.value)}
+                  placeholder="e.g. Perfect for: Daily City Commutes & Weekend Sprints"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition mb-2"
+                />
+                <textarea
+                  value={form.specs?.expertVerdictText ?? ""}
+                  onChange={(e) => handleSpecChange("expertVerdictText", e.target.value)}
+                  placeholder="A short paragraph explaining why this vehicle stands out..."
+                  rows={2}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition resize-none"
+                />
               </div>
 
               {/* Description */}
