@@ -1,4 +1,5 @@
 const db = require("../config/db")
+const cloudinary = require("../config/cloudinary")
 
 const geminiApiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY
 const geminiModel = "gemini-3.5-flash"
@@ -143,9 +144,25 @@ const getProductById = async (req, res) => {
   }
 }
 
-function buildImages(req) {
-  const uploadBase = `${req.protocol}://${req.get("host")}/uploads`
-  const uploaded = (req.files || []).map((file) => file.path)
+function uploadBufferToCloudinary(buffer) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "motoshop/products" },
+      (error, result) => {
+        if (error) return reject(error)
+        resolve(result.secure_url)
+      }
+    )
+    stream.end(buffer)
+  })
+}
+
+async function buildImages(req) {
+  // Files arrive as in-memory buffers (multer.memoryStorage) — upload each
+  // straight to Cloudinary and use the permanent URL it returns.
+  const uploaded = await Promise.all(
+    (req.files || []).map((file) => uploadBufferToCloudinary(file.buffer))
+  )
 
   let bodyImages = []
   if (req.body.images) {
@@ -172,7 +189,7 @@ const addProduct = async (req, res) => {
   try {
     const { name, company, type, cc, fuel, use_case,
             price, rating, reviews, badge, description, specs, is_trending } = req.body
-    const images = buildImages(req)
+    const images = await buildImages(req)
     // images = array of URLs from frontend e.g. ["url1", "url2"]
 
     if (!name || !company || !type || !price)
@@ -220,7 +237,7 @@ const updateProduct = async (req, res) => {
     if (existing.length === 0)
       return res.status(404).json({ success: false, message: "Product not found" })
 
-    const images = buildImages(req)
+    const images = await buildImages(req)
 
     await db.query(
       `UPDATE products SET

@@ -1,18 +1,6 @@
 const multer = require("multer")
-const fs = require("fs")
-const {CloudinaryStorage} = require("multer-storage-cloudinary")
-const cloudinary = require("../config/cloudinary")
-const path = require("path")
 
-const storage = CloudinaryStorage({
-  cloudinary, 
-  params : {
-    folder: "/motoshop-backend/products",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-  },
-})
-
-
+const storage = multer.memoryStorage()
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
