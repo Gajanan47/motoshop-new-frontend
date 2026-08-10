@@ -145,7 +145,7 @@ const getProductById = async (req, res) => {
 
 function buildImages(req) {
   const uploadBase = `${req.protocol}://${req.get("host")}/uploads`
-  const uploaded = (req.files || []).map((file) => `${uploadBase}/${file.filename}`)
+  const uploaded = (req.files || []).map((file) => file.path)
 
   let bodyImages = []
   if (req.body.images) {
