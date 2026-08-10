@@ -14,7 +14,7 @@ app.use(cors({
     
     origin: [
   "http://localhost:5173",
-  "https://motoshop-new-frontend-qmev355mr.vercel.app",
+  "https://motoshop-new-frontend-cxr4e37j1.vercel.app",
 ],
     credentials: true
 }))
