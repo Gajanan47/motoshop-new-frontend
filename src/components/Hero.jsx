@@ -51,7 +51,7 @@ export default function Hero({ featured = [] }) {
     <div className="relative overflow-hidden bg-slate-950">
       {/* background image + dark gradient so text stays readable */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-70"
+        className="absolute inset-0 sm:bg-cover bg-contain bg-no-repeat  bg-center opacity-70"
         style={{
           backgroundImage:
             `url(${heroBg[currentImage]})`,
